@@ -1,5 +1,4 @@
 import gc
-import _thread
 from .level import Level
 from .input import Input, Button
 from .vector import Vector
@@ -50,9 +49,6 @@ class Game:
         self.is_active = False
         self.foreground_color = foreground_color
         self.background_color = background_color
-
-        # Create a lock to ensure that update and render do not conflict.
-        self.lock = _thread.allocate_lock()
 
     def clamp(self, value, lower, upper):
         """Clamp a value between a lower and upper bound."""
@@ -151,27 +147,22 @@ class Game:
 
     def render(self):
         """Render the game entities in a thread-safe manner."""
-        self.lock.acquire()
-        try:
-            # Clear the entire screen every frame.
-            self.draw.clear(color=self.background_color)
+        # Clear the entire screen every frame.
+        self.draw.clear(color=self.background_color)
 
-            # Draw each entity.
-            for entity in self.current_level.entities:
-                # If you need to run any custom rendering function:
-                if entity.render:
-                    entity.render(self.draw, self)
+        # Draw each entity.
+        for entity in self.current_level.entities:
+            # If you need to run any custom rendering function:
+            if entity.render:
+                entity.render(self.draw, self)
 
-                # Compute on-screen coordinates (using camera offset).
-                draw_x = entity.pos.x - self.camera.x
-                draw_y = entity.pos.y - self.camera.y
+            # Compute on-screen coordinates (using camera offset).
+            draw_x = entity.pos.x - self.camera.x
+            draw_y = entity.pos.y - self.camera.y
 
-                # Draw the entity's sprite.
-                if entity.sprite:
-                    self.draw.image(entity.sprite, draw_x, draw_y)
-
-        finally:
-            self.lock.release()
+            # Draw the entity's sprite.
+            if entity.sprite:
+                self.draw.image(entity.sprite, draw_x, draw_y)
 
     def start(self, engine) -> bool:
         """Start the game"""
@@ -220,25 +211,17 @@ class Game:
 
     def update(self):
         """Update the game input and entity positions in a thread-safe manner."""
-        self.lock.acquire()
-        try:
-            self.manage_input()
+        self.manage_input()
 
-            # Run user-defined update functions for each entity.
-            for entity in self.current_level.entities:
-                if entity.update:
-                    entity.update(self)
+        # Run user-defined update functions for each entity.
+        for entity in self.current_level.entities:
+            if entity.update:
+                entity.update(self)
 
-            # Calculate camera offset to center the player.
-            self.camera.x = self.pos.x - (self.size.x // 2)
-            self.camera.y = self.pos.y - (self.size.y // 2)
+        # Calculate camera offset to center the player.
+        self.camera.x = self.pos.x - (self.size.x // 2)
+        self.camera.y = self.pos.y - (self.size.y // 2)
 
-            # Clamp camera position to prevent going outside the world.
-            self.camera.x = self.clamp(
-                self.camera.x, 0, self.world_size.x - self.size.x
-            )
-            self.camera.y = self.clamp(
-                self.camera.y, 0, self.world_size.y - self.size.y
-            )
-        finally:
-            self.lock.release()
+        # Clamp camera position to prevent going outside the world.
+        self.camera.x = self.clamp(self.camera.x, 0, self.world_size.x - self.size.x)
+        self.camera.y = self.clamp(self.camera.y, 0, self.world_size.y - self.size.y)

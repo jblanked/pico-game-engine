@@ -1,7 +1,6 @@
 import gc
 from time import sleep
 from .game import Game
-from .EasyThread import EasyThread as thread
 
 
 class GameEngine:
@@ -25,13 +24,10 @@ class GameEngine:
         # start the game
         self.game.start(self)
 
-        # update the positions/input in a separate thread
-        render_thread = thread(target=self.game.update)
-        render_thread.start()
-
         # start the game loop
         while True:
             gc.collect()
+            self.game.update()  # update positions, input, etc.
             self.game.render()  # update graphics
 
             # check if the game is over
@@ -41,7 +37,6 @@ class GameEngine:
             sleep(1 / self.fps)
 
         # stop the game
-        render_thread.end()
         self.game.stop(self)
 
         # clear the screen
