@@ -135,12 +135,6 @@ class PicoGameEngine:
     def player_render(self, player: Entity, draw: Draw, game: Game):
         """Render the player entity"""
 
-        # black background behind text, white text
-        draw.color(
-            color565(255, 255, 255),  # white
-            color565(128, 128, 128),  # gray
-        )
-
         # draw name of the game
         draw.text(game.name, 110, 10)
 

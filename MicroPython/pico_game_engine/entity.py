@@ -32,6 +32,7 @@ class Entity:
     ):
         self.name = name
         self.pos = Vector(position.x, position.y)
+        self.old_pos = Vector(0, 0)
         self._start = start
         self._stop = stop
         self._update = update
@@ -39,6 +40,7 @@ class Entity:
         self._collision = collision
         self.is_player = is_player
         self.sprite = sprite
+        self.pos_did_change = False
 
         # Set the size of the entity based on the image size
         self.size = self.sprite.size if self.sprite else Vector(0, 0)
@@ -56,7 +58,9 @@ class Entity:
     @position.setter
     def position(self, value: Vector):
         """Used by the engine to set the position of the entity."""
+        self.old_pos = Vector(self.pos.x, self.pos.y)
         self.pos = Vector(value.x, value.y)
+        self.pos_did_change = True
 
     def render(self, draw, game):
         """Called every frame to render the entity."""

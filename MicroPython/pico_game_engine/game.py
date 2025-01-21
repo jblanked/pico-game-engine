@@ -147,11 +147,18 @@ class Game:
 
     def render(self):
         """Render the game entities in a thread-safe manner."""
-        # Clear the entire screen every frame.
-        self.draw.clear(color=self.background_color)
-
         # Draw each entity.
         for entity in self.current_level.entities:
+            if entity.pos_did_change and entity.old_pos is not entity.pos:
+                # delete old pos
+                draw_x = entity.old_pos.x - self.camera.x
+                draw_y = entity.old_pos.y - self.camera.y
+
+                self.draw.clear(
+                    Vector(draw_x, draw_y), entity.size, self.background_color
+                )
+
+                entity.old_pos = entity.pos
             # If you need to run any custom rendering function:
             if entity.render:
                 entity.render(self.draw, self)
