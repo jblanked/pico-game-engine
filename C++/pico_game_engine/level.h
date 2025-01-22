@@ -1,0 +1,40 @@
+#pragma once
+#include "Arduino.h"
+#include "vector.h"
+
+class Game;
+class Entity;
+
+#define MAX_ENTITIES 10
+
+class Level
+{
+public:
+    const char *name;
+    Vector size;
+
+    Level(); // Default constructor
+    Level(
+        const char *name,
+        Vector size,
+        Game *game,
+        void (*start)(Level) = NULL,
+        void (*stop)(Level) = NULL);
+    ~Level();
+
+    void clear();
+    Entity **collision_list(Entity *entity, int &count);
+    void entity_add(Entity *entity);
+    void entity_remove(Entity *entity);
+    bool has_collided(Entity *entity);
+    bool is_collision(Entity *a, Entity *b);
+    void start();
+    void stop();
+
+    Entity *entities[MAX_ENTITIES];
+    Game *game;
+
+private:
+    void (*_start)(Level);
+    void (*_stop)(Level);
+};
