@@ -21,9 +21,9 @@ private:
 class Image
 {
 public:
-    Vector size;     // Image dimensions (width, height)
-    uint8_t *buffer; // Pointer to the image buffer (each pixel is 2 bytes, RGB565)
-    uint8_t *data;   // Raw image data (e.g. the BMP pixel data in file order)
+    Vector size;      // Image dimensions (width, height)
+    uint16_t *buffer; // Pointer to the image buffer (each pixel is 2 bytes, RGB565)
+    uint8_t *data;    // Raw image data (e.g. the BMP pixel data in file order)
 
     Image() : size(0, 0), buffer(nullptr), data(nullptr) {}
     ~Image();

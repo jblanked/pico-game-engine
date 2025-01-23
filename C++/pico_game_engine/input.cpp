@@ -12,12 +12,12 @@ Input::Input(int pin, int button)
     this->elapsed_time = 0;
     this->was_pressed = false;
 
-    pinMode(this->pin, INPUT);
+    pinMode(this->pin, INPUT_PULLUP);
 }
 
 bool Input::is_pressed()
 {
-    return digitalRead(this->pin) == HIGH;
+    return digitalRead(this->pin) == LOW;
 }
 
 bool Input::is_held(int duration)

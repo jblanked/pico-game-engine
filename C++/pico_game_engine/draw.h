@@ -1,9 +1,9 @@
 #pragma once
-// get from Manage Libraries -> TFT_eSPI by Bodmer
 #include <TFT_eSPI.h> // Graphics and font library for ILI9341 driver chip
 #include <SPI.h>
 #include "vector.h"
 #include "image.h"
+
 /*
  Make sure all the display driver and pin connections are correct by
  editing the User_Setup.h file in the TFT_eSPI library folder.
@@ -36,7 +36,7 @@ I have these settings for my Pico Game Engine setup in the User_Setup.h file:
 #define SPI_FREQUENCY 27000000
 #define SPI_READ_FREQUENCY 20000000
 #define SPI_TOUCH_FREQUENCY 2500000
- */
+*/
 
 // The Draw class is used to draw images and text on the display.
 class Draw
@@ -47,7 +47,7 @@ public:
     void background(uint16_t color);                                        // Sets the background color of the display.
     void clear(Vector position, Vector size, uint16_t color);               // Clears the display at the specified position and size with the specified color.
     void color(uint16_t color);                                             // Sets the color for drawing.
-    void image(Vector position, Image image);                               // Draws an image on the display at the specified position.
+    void image(Vector position, Image &image);                              // Draws an image on the display at the specified position.
     void font(int font);                                                    // Sets the font for text drawing.
     void text(Vector position, const char *text);                           // Draws text on the display at the specified position.
     void text(Vector position, const char *text, int font);                 // Draws text on the display at the specified position with the specified font.

@@ -90,11 +90,16 @@ bool Image::from_byte_array(uint8_t *srcData, Vector newSize)
     if (srcData == nullptr)
         return false;
     this->size = newSize;
-    uint32_t bufSize = size.x * size.y * 2; // each pixel is 2 bytes
-    buffer = new uint8_t[bufSize];
+    uint32_t numPixels = size.x * size.y;
+    buffer = new uint16_t[numPixels];
     if (!buffer)
         return false;
-    memcpy(buffer, srcData, bufSize);
+
+    // Convert uint8_t array to uint16_t array (little endian)
+    for (uint32_t i = 0; i < numPixels; i++)
+    {
+        buffer[i] = ((uint16_t)srcData[2 * i + 1] << 8) | srcData[2 * i];
+    }
     return true;
 }
 
@@ -211,7 +216,7 @@ bool Image::from_string(String strData)
     // Store size and allocate the buffer.
     this->size = Vector(width, height);
     uint32_t bufSize = width * height * 2;
-    buffer = new uint8_t[bufSize];
+    buffer = new uint16_t[width * height];
     if (!buffer)
     {
         delete[] pixels;
@@ -220,10 +225,9 @@ bool Image::from_string(String strData)
 
     // Copy the pixel values into the buffer.
     // (No vertical flip is done here because the string data is assumed to be top-down.)
-    uint16_t *buf16 = (uint16_t *)buffer;
     for (int i = 0; i < width * height; i++)
     {
-        buf16[i] = pixels[i];
+        buffer[i] = pixels[i];
     }
 
     delete[] pixels;
@@ -291,8 +295,7 @@ bool Image::open_image(const char *path)
     uint32_t rowSize = ((width * 2 + 3) / 4) * 4; // each pixel is 2 bytes
 
     // Allocate our data buffer for pixel values (width * height * 2 bytes).
-    uint32_t dataSize = width * height * 2;
-    data = new uint8_t[dataSize];
+    data = new uint8_t[width * height * 2];
     if (!data)
     {
         delete[] fileData;
@@ -305,7 +308,7 @@ bool Image::open_image(const char *path)
     {
         // In the file, row0 is the bottom row.
         uint8_t *srcRow = fileData + dataOffset + row * rowSize;
-        // We store rows in the same order as read (i.e. bottom-up).
+        // We store rows in the same order as read (i.e., bottom-up).
         memcpy(data + row * width * 2, srcRow, width * 2);
     }
 
@@ -323,13 +326,12 @@ bool Image::create_image_buffer()
     int height = (int)size.y;
 
     uint32_t numPixels = width * height;
-    uint32_t bufSize = numPixels * 2;
-    buffer = new uint8_t[bufSize];
+    buffer = new uint16_t[numPixels];
     if (!buffer)
         return false;
 
     // Reinterpret pointers as 16-bit arrays.
-    uint16_t *buf16 = (uint16_t *)buffer;
+    uint16_t *buf16 = buffer;
     uint16_t *data16 = (uint16_t *)data;
 
     // Flip rows: BMP data is stored bottom-up and we want top-down.

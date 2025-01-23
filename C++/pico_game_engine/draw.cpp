@@ -30,9 +30,17 @@ void Draw::color(uint16_t color)
     tft.setTextColor(color);
 }
 
-void Draw::image(Vector position, Image image)
+void Draw::image(Vector position, Image &image) // Changed to pass by reference
 {
-    tft.pushImage(position.x, position.y, image.size.x, image.size.y, image.data);
+    if (image.buffer != nullptr)
+    {
+        tft.pushImage(position.x, position.y, image.size.x, image.size.y, image.buffer);
+    }
+    else
+    {
+        // Handle the case where the buffer is not initialized
+        // For example, blink an LED or log an error
+    }
 }
 
 void Draw::font(int font)
