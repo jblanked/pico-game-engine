@@ -12,6 +12,7 @@ class Level
 public:
     const char *name;
     Vector size;
+    int entity_count = 0;
 
     Level(); // Default constructor
     Level(
@@ -28,8 +29,10 @@ public:
     void entity_remove(Entity *entity);
     bool has_collided(Entity *entity);
     bool is_collision(Entity *a, Entity *b);
+    void render(Game *game);
     void start();
     void stop();
+    void update(Game *game);
 
     Entity *entities[MAX_ENTITIES];
     Game *game;

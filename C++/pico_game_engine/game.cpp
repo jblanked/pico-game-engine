@@ -205,34 +205,8 @@ void Game::render()
         return;
     }
 
-    // Loop over all possible entities.
-    for (int i = 0; i < MAX_ENTITIES; i++)
-    {
-        Entity *ent = this->current_level->entities[i];
-        if (ent != nullptr)
-        {
-
-            if (ent->is_active && (ent->old_position != ent->position) && ent->position_changed)
-            {
-                // Clear the entity’s previous position.
-                this->draw->clear(ent->old_position, ent->size, bg_color);
-                ent->old_position = ent->position;
-            }
-
-            // Run any custom rendering.
-            ent->render(this->draw, this);
-
-            // Calculate screen coordinates (with camera offset)
-            int draw_x = (int)(ent->position.x - camera.x);
-            int draw_y = (int)(ent->position.y - camera.y);
-
-            // Draw the entity’s sprite if available.
-            if (ent->sprite->size.x > 0)
-            {
-                this->draw->image(Vector(draw_x, draw_y), *(ent->sprite)); // Pass by reference
-            }
-        }
-    }
+    // render the level
+    this->current_level->render(this);
 }
 
 void Game::start()
@@ -313,6 +287,7 @@ void Game::stop()
 
 void Game::update()
 {
+
     // Update input states
     if (this->button_up)
         this->button_up->run();
@@ -333,21 +308,6 @@ void Game::update()
     if (this->current_level == nullptr)
         return;
 
-    // Update every active entity.
-    for (int i = 0; i < MAX_ENTITIES; i++)
-    {
-        Entity *ent = this->current_level->entities[i];
-        if (ent != nullptr && ent->is_active)
-        {
-            ent->update(this);
-        }
-    }
-
-    // Center the camera on pos (e.g., player position)
-    this->camera.x = this->pos.x - this->size.x / 2;
-    this->camera.y = this->pos.y - this->size.y / 2;
-
-    // Clamp the camera so it never goes outside the world.
-    clamp(this->camera.x, 0, this->world_size.x - this->size.x);
-    clamp(this->camera.y, 0, this->world_size.y - this->size.y);
+    // Update the level
+    this->current_level->update(this);
 }
