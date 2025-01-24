@@ -27,19 +27,19 @@ void player_update(Entity *player, Game *game)
     // Tentatively set new position
     player->position_set(newPos);
 
-    // If we collided, revert to old position
-    if (game->current_level->has_collided(player))
-    {
-        player->position_set(oldPos);
-    }
-    else
-    {
-        // force update/redraw of all entities in the level
-        for (int i = 0; i < game->current_level->entity_count; i++)
-        {
-            game->current_level->entities[i]->position_changed = true;
-        }
-    }
+    // // If we collided, revert to old position
+    // if (game->current_level->has_collided(player))
+    // {
+    //     player->position_set(oldPos);
+    // }
+    // else
+    // {
+    //     // force update/redraw of all entities in the level
+    //     for (int i = 0; i < game->current_level->entity_count; i++)
+    //     {
+    //         game->current_level->entities[i]->position_changed = true;
+    //     }
+    // }
 }
 
 /* Render the player entity along with game information */
