@@ -5,22 +5,19 @@
 class Game;
 class Entity;
 
-#define MAX_ENTITIES 10
-
 class Level
 {
 public:
     const char *name;
     Vector size;
-    int entity_count = 0;
+    int entity_count;
 
     Level(); // Default constructor
-    Level(
-        const char *name,
-        Vector size,
-        Game *game,
-        void (*start)(Level) = NULL,
-        void (*stop)(Level) = NULL);
+    Level(const char *name,
+          Vector size,
+          Game *game,
+          void (*start)(Level) = nullptr,
+          void (*stop)(Level) = nullptr);
     ~Level();
 
     void clear();
@@ -34,7 +31,8 @@ public:
     void stop();
     void update(Game *game);
 
-    Entity *entities[MAX_ENTITIES];
+    Entity **entities;
+
     Game *game;
 
 private:

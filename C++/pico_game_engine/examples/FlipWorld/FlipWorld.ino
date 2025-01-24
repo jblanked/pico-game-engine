@@ -3,7 +3,7 @@
 #include "assets.h"
 #include "sprites.h"
 /*
-    Board Manager: Raspberry Pi Pico
+    Board Manager: Raspberry Pi Pico (even if you are using the Pico W)
     Flash Size: 2MB (Sketch: 1920KB, FS: 128KB)
     CPU Speed: 133MHz (or overclocked to 200MHz)
 */
@@ -143,11 +143,18 @@ void setup()
     game->level_add(level);
 
     // Add the player entity to the level
-    level->entity_add(new Entity("Player", player_left_naked_10x10px, Vector(10, 10), Vector(160, 120), NULL, NULL, player_update, player_render, NULL, true));
+    level->entity_add(new Entity("Player", player_left_sword_15x11px, Vector(15, 11), Vector(160, 120), NULL, NULL, player_update, player_render, NULL, true));
 
     // Create and add some icons to the level
-    create_icon(level, "tree", Vector(50, 50));
-    create_icon(level, "fence", Vector(100, 50));
+    for (int i = 0; i < 10; i++)
+    {
+        create_icon(level, "rock_small", Vector(10 + (i * 10), 90));
+    }
+    for (int i = 0; i < 20; i++)
+    {
+        create_icon(level, "tree", Vector(50 + (i * 10), 180));
+    }
+    create_icon(level, "fence", Vector(100, 70));
     create_icon(level, "fench_end", Vector(150, 50));
 
     // Create the game engine (with 30 frames per second target).
