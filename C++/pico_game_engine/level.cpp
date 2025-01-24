@@ -43,12 +43,13 @@ void Level::clear()
 
 Entity **Level::collision_list(Entity *entity, int &count)
 {
-    // Allocate an array for the results (caller should delete[] the result when done).
     Entity **result = new Entity *[MAX_ENTITIES];
     count = 0;
     for (int i = 0; i < MAX_ENTITIES; i++)
     {
-        if (this->entities[i] != nullptr && this->is_collision(entity, this->entities[i]))
+        if (this->entities[i] != nullptr &&
+            this->entities[i] != entity && // <-- skip self
+            this->is_collision(entity, this->entities[i]))
         {
             result[count++] = this->entities[i];
         }
@@ -89,7 +90,9 @@ bool Level::has_collided(Entity *entity)
 {
     for (int i = 0; i < MAX_ENTITIES; i++)
     {
-        if (this->entities[i] != nullptr && this->is_collision(entity, this->entities[i]))
+        if (this->entities[i] != nullptr &&
+            this->entities[i] != entity && // <-- skip self
+            this->is_collision(entity, this->entities[i]))
         {
             return true;
         }

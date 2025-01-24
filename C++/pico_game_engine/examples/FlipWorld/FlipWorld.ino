@@ -3,7 +3,7 @@
 #include "assets.h"
 #include "sprites.h"
 /*
-    Board Manager: Raspberry Pi Pico W
+    Board Manager: Raspberry Pi Pico
     Flash Size: 2MB (Sketch: 1920KB, FS: 128KB)
     CPU Speed: 133MHz (or overclocked to 200MHz)
 */
@@ -27,19 +27,19 @@ void player_update(Entity *player, Game *game)
     // Tentatively set new position
     player->position_set(newPos);
 
-    // // If we collided, revert to old position
-    // if (game->current_level->has_collided(player))
-    // {
-    //     player->position_set(oldPos);
-    // }
-    // else
-    // {
-    //     // force update/redraw of all entities in the level
-    //     for (int i = 0; i < game->current_level->entity_count; i++)
-    //     {
-    //         game->current_level->entities[i]->position_changed = true;
-    //     }
-    // }
+    // If we collided, revert to old position
+    if (game->current_level->has_collided(player))
+    {
+        player->position_set(oldPos);
+    }
+    else
+    {
+        // force update/redraw of all entities in the level
+        for (int i = 0; i < game->current_level->entity_count; i++)
+        {
+            game->current_level->entities[i]->position_changed = true;
+        }
+    }
 }
 
 /* Render the player entity along with game information */
@@ -51,31 +51,27 @@ void player_render(Entity *player, Draw *draw, Game *game)
     */
     game->draw->text(Vector(120, 10), "FlipWorld");
 }
-
-void icon_collision(Entity *player, Entity *other, Game *game)
+void icon_collision(Entity *self, Entity *other, Game *game)
 {
-    // if collision, bounce player back in the direction they came
-    // if (game->current_level->is_collision(player, other))
-    // {
-    //     Vector newPos = player->position;
-    //     if (game->input == BUTTON_UP)
-    //     {
-    //         newPos.y += other->size.y;
-    //     }
-    //     else if (game->input == BUTTON_DOWN)
-    //     {
-    //         newPos.y -= other->size.y;
-    //     }
-    //     else if (game->input == BUTTON_LEFT)
-    //     {
-    //         newPos.x += other->size.x;
-    //     }
-    //     else if (game->input == BUTTON_RIGHT)
-    //     {
-    //         newPos.x -= other->size.x;
-    //     }
-    //     player->position_set(newPos);
-    // }
+    // Check collision
+    if (game->current_level->is_collision(self, other))
+    {
+        if (other->name == "Player")
+        {
+            Vector newPos = other->position;
+            // bounce the player back
+            if (game->input == BUTTON_UP)
+                newPos.y += self->size.y;
+            else if (game->input == BUTTON_DOWN)
+                newPos.y -= self->size.y;
+            else if (game->input == BUTTON_LEFT)
+                newPos.x += self->size.x;
+            else if (game->input == BUTTON_RIGHT)
+                newPos.x -= self->size.x;
+
+            other->position_set(newPos);
+        }
+    }
 }
 
 void create_icon(Level *level, const char *name, Vector pos)
