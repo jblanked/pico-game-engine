@@ -10,7 +10,10 @@ void setup_fs()
         {
             LittleFS.begin();
         }
+        else
+        {
         rp2040.reboot();
+        }
     }
 }
 
