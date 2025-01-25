@@ -17,13 +17,13 @@ void player_update(Entity *player, Game *game)
 
     // Move according to input
     if (game->input == BUTTON_UP)
-        newPos.y -= 5;
+        newPos.y -= 10;
     else if (game->input == BUTTON_DOWN)
-        newPos.y += 5;
+        newPos.y += 10;
     else if (game->input == BUTTON_LEFT)
-        newPos.x -= 5;
+        newPos.x -= 10;
     else if (game->input == BUTTON_RIGHT)
-        newPos.x += 5;
+        newPos.x += 10;
 
     // Tentatively set new position
     player->position_set(newPos);
@@ -35,12 +35,26 @@ void player_update(Entity *player, Game *game)
     }
     else
     {
-        // force update/redraw of all entities in the level
+        // Force update/redraw of all entities in the level
         for (int i = 0; i < game->current_level->entity_count; i++)
         {
             game->current_level->entities[i]->position_changed = true;
         }
     }
+
+    // Store the current camera position before updating
+    game->old_pos = game->pos;
+
+    // Update camera position to center the player
+    float camera_x = player->position.x - (game->size.x / 2);
+    float camera_y = player->position.y - (game->size.y / 2);
+
+    // Clamp camera position to the world boundaries
+    camera_x = constrain(camera_x, 0, game->current_level->size.x - game->size.x);
+    camera_y = constrain(camera_y, 0, game->current_level->size.y - game->size.y);
+
+    // Set the new camera position
+    game->pos = Vector(camera_x, camera_y);
 }
 
 /* Render the player entity along with game information */
@@ -60,6 +74,9 @@ void setup()
     // Create the game instance with its name, start/stop callbacks, and colors.
     Game *game = new Game("FlipWorld", Vector(320, 240), NULL, NULL, TFT_RED, TFT_WHITE);
 
+    // set world size
+    game->world_size = Vector(768, 384);
+
     // Add input buttons (using the D-pad mapping)
     game->input_add(new Input(16, BUTTON_UP));
     game->input_add(new Input(17, BUTTON_RIGHT));
@@ -67,42 +84,36 @@ void setup()
     game->input_add(new Input(19, BUTTON_LEFT));
 
     // Create and add a level to the game.
-    Level *level = new Level("Level 1", Vector(320, 240), game);
+    Level *level = new Level("Level 1", Vector(768, 384), game);
     game->level_add(level);
 
     // Add the player entity to the level
-    level->entity_add(new Entity("Player", player_left_sword_15x11px, Vector(15, 11), Vector(160, 120), NULL, NULL, player_update, player_render, NULL, true));
+    level->entity_add(new Entity("Player", player_left_sword_15x11px, Vector(15, 11), Vector(384, 192), NULL, NULL, player_update, player_render, NULL, true));
+
+    // set game position to center of player
+    game->pos = Vector(384, 192);
+    game->old_pos = game->pos;
 
     // Create and add some icons to the level with json
     const char *json_data = R"json(
     {
         "json_data": [
-        {"icon": "tree", "x": 5, "y": 2, "amount": 22, "horizontal": true},
-        {"icon": "tree", "x": 5, "y": 2, "amount": 11, "horizontal": false},
-        {"icon": "tree", "x": 22, "y": 18, "amount": 21, "horizontal": true},
-        {"icon": "tree", "x": 22, "y": 18, "amount": 11, "horizontal": false},
-        {"icon": "tree", "x": 5, "y": 155, "amount": 22, "horizontal": true},
-        {"icon": "tree", "x": 5, "y": 172, "amount": 22, "horizontal": true},
-        {"icon": "tree", "x": 345, "y": 50, "amount": 8, "horizontal": false},
-        {"icon": "tree", "x": 362, "y": 50, "amount": 8, "horizontal": false},
-        {"icon": "tree", "x": 5, "y": 36, "amount": 14, "horizontal": true},
-        {"icon": "tree", "x": 277, "y": 36, "amount": 3, "horizontal": true},
-        {"icon": "tree", "x": 5, "y": 53, "amount": 3, "horizontal": true},
-        {"icon": "tree", "x": 124, "y": 53, "amount": 6, "horizontal": true},
-        {"icon": "tree", "x": 260, "y": 53, "amount": 4, "horizontal": true},
-        {"icon": "tree", "x": 5, "y": 70, "amount": 6, "horizontal": true},
-        {"icon": "tree", "x": 124, "y": 70, "amount": 7, "horizontal": true},
-        {"icon": "tree", "x": 5, "y": 87, "amount": 5, "horizontal": true},
-        {"icon": "tree", "x": 124, "y": 87, "amount": 3, "horizontal": true},
-        {"icon": "tree", "x": 260, "y": 87, "amount": 7, "horizontal": true},
-        {"icon": "tree", "x": 107, "y": 104, "amount": 4, "horizontal": true},
-        {"icon": "tree", "x": 243, "y": 104, "amount": 4, "horizontal": true},
-        {"icon": "tree", "x": 5, "y": 121, "amount": 4, "horizontal": true},
-        {"icon": "tree", "x": 124, "y": 121, "amount": 3, "horizontal": true},
-        {"icon": "tree", "x": 260, "y": 121, "amount": 4, "horizontal": true},
-        {"icon": "tree", "x": 5, "y": 138, "amount": 3, "horizontal": true},
-        {"icon": "tree", "x": 90, "y": 138, "amount": 1, "horizontal": true},
-        {"icon": "tree", "x": 192, "y": 138, "amount": 3, "horizontal": true}
+        {"icon": "rock_medium", "x": 100, "y": 100, "amount": 10, "horizontal": true},
+        {"icon": "rock_medium", "x": 400, "y": 300, "amount": 6, "horizontal": true},
+        {"icon": "rock_small", "x": 700, "y": 300, "amount": 8, "horizontal": true},
+        {"icon": "fence", "x": 50, "y": 50, "amount": 10, "horizontal": true},
+        {"icon": "fence", "x": 250, "y": 150, "amount": 12, "horizontal": true},
+        {"icon": "fence", "x": 550, "y": 350, "amount": 12, "horizontal": true},
+        {"icon": "rock_large", "x": 400, "y": 70, "amount": 12, "horizontal": true},
+        {"icon": "rock_large", "x": 200, "y": 200, "amount": 6, "horizontal": false},
+        {"icon": "tree", "x": 5, "y": 5, "amount": 45, "horizontal": true},
+        {"icon": "tree", "x": 5, "y": 5, "amount": 22, "horizontal": false},
+        {"icon": "tree", "x": 22, "y": 18, "amount": 43, "horizontal": true},
+        {"icon": "tree", "x": 22, "y": 18, "amount": 22, "horizontal": false},
+        {"icon": "tree", "x": 5, "y": 347, "amount": 45, "horizontal": true},
+        {"icon": "tree", "x": 5, "y": 364, "amount": 45, "horizontal": true},
+        {"icon": "tree", "x": 733, "y": 5, "amount": 22, "horizontal": false},
+        {"icon": "tree", "x": 750, "y": 5, "amount": 22, "horizontal": false}
     ]
     }
     )json";

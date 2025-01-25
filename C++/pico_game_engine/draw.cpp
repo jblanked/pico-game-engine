@@ -22,7 +22,39 @@ void Draw::background(uint16_t color)
 
 void Draw::clear(Vector position, Vector size, uint16_t color)
 {
-    tft.fillRect(position.x, position.y, size.x, size.y, color);
+    // Calculate the clipping boundaries
+    int x = position.x;
+    int y = position.y;
+    int width = size.x;
+    int height = size.y;
+
+    // Adjust for left and top boundaries
+    if (x < 0)
+    {
+        width += x; // Reduce width by the negative offset
+        x = 0;
+    }
+    if (y < 0)
+    {
+        height += y; // Reduce height by the negative offset
+        y = 0;
+    }
+
+    // Adjust for right and bottom boundaries
+    if (x + width > this->size.x)
+    {
+        width = this->size.x - x;
+    }
+    if (y + height > this->size.y)
+    {
+        height = this->size.y - y;
+    }
+
+    // Ensure width and height are positive before drawing
+    if (width > 0 && height > 0)
+    {
+        tft.fillRect(x, y, width, height, color);
+    }
 }
 
 void Draw::color(uint16_t color)
@@ -30,16 +62,45 @@ void Draw::color(uint16_t color)
     tft.setTextColor(color);
 }
 
-void Draw::image(Vector position, Image &image) // Changed to pass by reference
+void Draw::image(Vector position, Image &image)
 {
     if (image.buffer != nullptr)
     {
-        tft.pushImage(position.x, position.y, image.size.x, image.size.y, image.buffer);
-    }
-    else
-    {
-        // Handle the case where the buffer is not initialized
-        // For example, blink an LED or log an error
+        // Calculate clipping boundaries
+        float x = position.x;
+        float y = position.y;
+        float img_width = image.size.x;
+        float img_height = image.size.y;
+        float screen_width = this->size.x;
+        float screen_height = this->size.y;
+
+        // Check horizontal boundaries
+        if (x < 0)
+        {
+            img_width += x; // Reduce width by the negative offset
+            x = 0;
+        }
+        if (x + img_width > screen_width)
+        {
+            img_width = screen_width - x;
+        }
+
+        // Check vertical boundaries
+        if (y < 0)
+        {
+            img_height += y; // Reduce height by the negative offset
+            y = 0;
+        }
+        if (y + img_height > screen_height)
+        {
+            img_height = screen_height - y;
+        }
+
+        // Ensure width and height are positive
+        if (img_width > 0 && img_height > 0)
+        {
+            tft.pushImage(x, y, img_width, img_height, image.buffer);
+        }
     }
 }
 

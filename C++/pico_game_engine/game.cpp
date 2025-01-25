@@ -6,7 +6,7 @@ Game::Game()
     : current_level(nullptr),
       button_up(nullptr), button_down(nullptr), button_left(nullptr),
       button_right(nullptr), button_center(nullptr), button_back(nullptr),
-      camera(0, 0), pos(0, 0), size(0, 0), world_size(0, 0),
+      camera(0, 0), old_pos(0, 0), pos(0, 0), size(0, 0), world_size(0, 0),
       is_active(false), input(-1),
       _start(nullptr), _stop(nullptr),
       fg_color(TFT_RED), bg_color(TFT_BLACK) // Initialize default colors
@@ -35,7 +35,7 @@ Game::Game(
       current_level(nullptr),
       button_up(nullptr), button_down(nullptr), button_left(nullptr),
       button_right(nullptr), button_center(nullptr), button_back(nullptr),
-      camera(0, 0), pos(0, 0), world_size(size.x, size.y),
+      camera(0, 0), pos(0, 0), old_pos(0, 0), world_size(size.x, size.y),
       is_active(false), input(-1)
 {
     for (int i = 0; i < MAX_LEVELS; i++)

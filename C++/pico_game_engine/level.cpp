@@ -170,23 +170,40 @@ bool Level::is_collision(Entity *a, Entity *b)
 
 void Level::render(Game *game)
 {
+    // Retrieve old and current camera positions
+    float old_camera_x = game->old_pos.x;
+    float old_camera_y = game->old_pos.y;
+    float camera_x = game->pos.x;
+    float camera_y = game->pos.y;
+    float screen_width = game->size.x;
+    float screen_height = game->size.y;
+
     for (int i = 0; i < this->entity_count; i++)
     {
         Entity *ent = this->entities[i];
         if (ent != nullptr && ent->is_active)
         {
-            // Clear the entity’s old position if it has moved.
-            if (ent->old_position != ent->position)
+            // Calculate old screen position based on OLD camera position and ENTITY's OLD position
+            float old_screen_x = ent->old_position.x - old_camera_x;
+            float old_screen_y = ent->old_position.y - old_camera_y;
+
+            // Calculate new screen position based on CURRENT camera position and ENTITY's CURRENT position
+            float new_screen_x = ent->position.x - camera_x;
+            float new_screen_y = ent->position.y - camera_y;
+
+            // Clear the old screen position if it was within the screen
+            if (!(old_screen_x + ent->size.x < 0 || old_screen_x > screen_width ||
+                  old_screen_y + ent->size.y < 0 || old_screen_y > screen_height))
             {
-                game->draw->clear(ent->old_position, ent->size, game->bg_color);
-                ent->old_position = ent->position;
-                ent->position_changed = false;
+                game->draw->clear(Vector(old_screen_x, old_screen_y), ent->size, game->bg_color);
             }
-            else if (ent->position_changed)
+
+            // Check if the entity is within the visible screen area in the new position
+            if (new_screen_x + ent->size.x < 0 || new_screen_x > screen_width ||
+                new_screen_y + ent->size.y < 0 || new_screen_y > screen_height)
             {
-                // Clear the entity’s current position if it has changed.
-                game->draw->clear(ent->position, ent->size, game->bg_color);
-                ent->position_changed = false;
+                // Entity is outside the visible area; skip rendering
+                continue;
             }
 
             // Run any custom rendering code
@@ -195,12 +212,13 @@ void Level::render(Game *game)
             // Draw the entity’s sprite if available
             if (ent->sprite && ent->sprite->size.x > 0)
             {
-                game->draw->image(ent->position, *(ent->sprite));
+                // Adjust drawing position based on camera
+                Vector screen_position = Vector(new_screen_x, new_screen_y);
+                game->draw->image(screen_position, *(ent->sprite));
             }
         }
     }
 }
-
 void Level::start()
 {
     if (this->_start != nullptr)
@@ -224,10 +242,6 @@ void Level::update(Game *game)
         Entity *ent = this->entities[i];
         if (ent != nullptr && ent->is_active)
         {
-            // Clamp position to game screen
-            game->clamp(ent->position.x, 0, game->size.x - ent->size.x);
-            game->clamp(ent->position.y, 0, game->size.y - ent->size.y);
-
             // Update the entity
             ent->update(this->game);
 

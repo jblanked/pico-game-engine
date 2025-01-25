@@ -50,6 +50,7 @@ public:
     Draw *draw;        // Draw object for rendering
     Vector camera;     // Camera position
     Vector pos;        // Player position
+    Vector old_pos;    // Previous position
     Vector size;       // Screen size
     Vector world_size; // World size
     bool is_active;    // Whether the game is active
