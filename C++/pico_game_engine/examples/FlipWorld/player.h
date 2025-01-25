@@ -10,10 +10,10 @@ void enemy_spawn(
     Vector end_position,
     float move_timer,
     float elapsed_move_timer,
-    float radius,
     float speed,
     float attack_timer,
     float elapsed_attack_timer,
     float strength,
     float health);
+void enemy_spawn_json(Level *level, const char *json);
 void player_spawn(Level *level, const char *name, Vector position);

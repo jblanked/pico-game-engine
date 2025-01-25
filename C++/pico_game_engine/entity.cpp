@@ -45,7 +45,7 @@ Entity::Entity(
     this->end_position = position;
     this->move_timer = 0;
     this->elapsed_move_timer = 0;
-    this->radius = 0;
+    this->radius = this->size.x / 2;
     this->speed = 0;
     this->attack_timer = 0;
     this->elapsed_attack_timer = 0;
@@ -106,7 +106,7 @@ Entity::Entity(
     this->end_position = position;
     this->move_timer = 0;
     this->elapsed_move_timer = 0;
-    this->radius = 0;
+    this->radius = this->size.x / 2;
     this->speed = 0;
     this->attack_timer = 0;
     this->elapsed_attack_timer = 0;

@@ -1,3 +1,4 @@
+#include <ArduinoJson.h>
 #include "player.h"
 #include "sprites.h"
 
@@ -48,7 +49,6 @@ void enemy_spawn(
     Vector end_position,
     float move_timer,
     float elapsed_move_timer,
-    float radius,
     float speed,
     float attack_timer,
     float elapsed_attack_timer,
@@ -69,7 +69,6 @@ void enemy_spawn(
         entity->end_position = end_position;
         entity->move_timer = move_timer;
         entity->elapsed_move_timer = elapsed_move_timer;
-        entity->radius = radius;
         entity->speed = speed;
         entity->attack_timer = attack_timer;
         entity->elapsed_attack_timer = elapsed_attack_timer;
@@ -81,6 +80,40 @@ void enemy_spawn(
     }
 }
 
+void enemy_spawn_json(Level *level, const char *json)
+{
+    // Parse the json
+    JsonDocument doc;
+    DeserializationError error = deserializeJson(doc, json);
+
+    // Check for errors
+    if (error)
+    {
+        return;
+    }
+
+    // Loop through the json data
+    int index = 0;
+    while (doc["enemy_data"][index])
+    {
+        // Get the enemy data
+        const char *id = doc["enemy_data"][index]["id"];
+        Vector start_position = Vector(doc["enemy_data"][index]["start_position"]["x"], doc["enemy_data"][index]["start_position"]["y"]);
+        Vector end_position = Vector(doc["enemy_data"][index]["end_position"]["x"], doc["enemy_data"][index]["end_position"]["y"]);
+        float move_timer = doc["enemy_data"][index]["move_timer"];
+        float speed = doc["enemy_data"][index]["speed"];
+        float attack_timer = doc["enemy_data"][index]["attack_timer"];
+        float strength = doc["enemy_data"][index]["strength"];
+        float health = doc["enemy_data"][index]["health"];
+
+        // Spawn the enemy entity
+        enemy_spawn(level, id, ENTITY_LEFT, start_position, end_position, move_timer, 0, speed, attack_timer, 0, strength, health);
+
+        // Increment the index
+        index++;
+    }
+}
+
 /* Update the player entity using current game input */
 static void player_update(Entity *self, Game *game)
 {
@@ -89,13 +122,25 @@ static void player_update(Entity *self, Game *game)
 
     // Move according to input
     if (game->input == BUTTON_UP)
+    {
         newPos.y -= 10;
+        self->direction = ENTITY_UP;
+    }
     else if (game->input == BUTTON_DOWN)
+    {
         newPos.y += 10;
+        self->direction = ENTITY_DOWN;
+    }
     else if (game->input == BUTTON_LEFT)
+    {
         newPos.x -= 10;
+        self->direction = ENTITY_LEFT;
+    }
     else if (game->input == BUTTON_RIGHT)
+    {
         newPos.x += 10;
+        self->direction = ENTITY_RIGHT;
+    }
 
     // Tentatively set new position
     self->position_set(newPos);
@@ -127,6 +172,16 @@ static void player_update(Entity *self, Game *game)
 
     // Set the new camera position
     game->pos = Vector(camera_x, camera_y);
+
+    // update player sprite based on direction
+    if (self->direction == ENTITY_LEFT)
+    {
+        self->sprite = self->sprite_left;
+    }
+    else if (self->direction == ENTITY_RIGHT)
+    {
+        self->sprite = self->sprite_right;
+    }
 }
 
 static void player_render(Entity *self, Draw *draw, Game *game)
