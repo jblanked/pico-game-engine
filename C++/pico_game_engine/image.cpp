@@ -12,7 +12,7 @@ void setup_fs()
         }
         else
         {
-        rp2040.reboot();
+            rp2040.reboot();
         }
     }
 }
@@ -55,7 +55,7 @@ bool EasyFile::write(const char *path, String data)
         this->file.close();
         return true;
     }
-    return true;
+    return false;
 }
 
 // Destructor: free any allocated memory.

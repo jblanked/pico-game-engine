@@ -3,26 +3,30 @@
 #include "game.h"
 
 Entity::Entity(
-    String name,
-    Image *sprite,
+    const char *name,
+    EntityType type,
     Vector position,
+    Image *sprite,
+    Image *sprite_left,
+    Image *sprite_right,
     void (*start)(Entity *, Game *),
     void (*stop)(Entity *, Game *),
     void (*update)(Entity *, Game *),
     void (*render)(Entity *, Draw *, Game *),
-    void (*collision)(Entity *, Entity *, Game *),
-    bool is_player)
+    void (*collision)(Entity *, Entity *, Game *))
 {
     this->name = name;
+    this->type = type;
     this->position = position;
     this->old_position = position;
+    this->sprite = sprite;
+    this->sprite_left = sprite_left;
+    this->sprite_right = sprite_right;
     this->_start = start;
     this->_stop = stop;
     this->_update = update;
     this->_render = render;
     this->_collision = collision;
-    this->is_player = is_player;
-    this->sprite = sprite;
     this->is_active = false;
 
     if (this->sprite->size.x > 0 && this->sprite->size.y > 0)
@@ -33,33 +37,73 @@ Entity::Entity(
     {
         this->size = Vector(0, 0);
     }
+
+    // initialize additional properties
+    this->direction = ENTITY_LEFT;
+    this->state = ENTITY_IDLE;
+    this->start_position = position;
+    this->end_position = position;
+    this->move_timer = 0;
+    this->elapsed_move_timer = 0;
+    this->radius = 0;
+    this->speed = 0;
+    this->attack_timer = 0;
+    this->elapsed_attack_timer = 0;
+    this->strength = 0;
+    this->health = 0;
 }
 
 Entity::Entity(
-    String name,
-    uint8_t *sprite,
-    Vector size,
+    const char *name,
+    EntityType type,
     Vector position,
+    Vector size,
+    uint8_t *sprite_data,
+    uint8_t *sprite_left_data,
+    uint8_t *sprite_right_data,
     void (*start)(Entity *, Game *),
     void (*stop)(Entity *, Game *),
     void (*update)(Entity *, Game *),
     void (*render)(Entity *, Draw *, Game *),
-    void (*collision)(Entity *, Entity *, Game *),
-    bool is_player)
+    void (*collision)(Entity *, Entity *, Game *))
 {
     this->name = name;
+    this->type = type;
     this->position = position;
     this->old_position = position;
+    this->size = size;
+    this->sprite = new Image();
+    this->sprite->from_byte_array(sprite_data, size);
+    this->sprite_left = new Image();
+    if (sprite_left_data != NULL)
+    {
+        this->sprite_left->from_byte_array(sprite_left_data, size);
+    }
+    this->sprite_right = new Image();
+    if (sprite_right_data != NULL)
+    {
+        this->sprite_right->from_byte_array(sprite_right_data, size);
+    }
     this->_start = start;
     this->_stop = stop;
     this->_update = update;
     this->_render = render;
     this->_collision = collision;
-    this->is_player = is_player;
-    this->sprite = new Image();
-    this->sprite->from_byte_array(sprite, size);
     this->is_active = false;
-    this->size = size;
+
+    // initialize additional properties
+    this->direction = ENTITY_LEFT;
+    this->state = ENTITY_IDLE;
+    this->start_position = position;
+    this->end_position = position;
+    this->move_timer = 0;
+    this->elapsed_move_timer = 0;
+    this->radius = 0;
+    this->speed = 0;
+    this->attack_timer = 0;
+    this->elapsed_attack_timer = 0;
+    this->strength = 0;
+    this->health = 0;
 }
 
 void Entity::collision(Entity *other, Game *game)

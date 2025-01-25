@@ -62,15 +62,15 @@ void Draw::color(uint16_t color)
     tft.setTextColor(color);
 }
 
-void Draw::image(Vector position, Image &image)
+void Draw::image(Vector position, Image *image)
 {
-    if (image.buffer != nullptr)
+    if (image->buffer != nullptr)
     {
         // Calculate clipping boundaries
         float x = position.x;
         float y = position.y;
-        float img_width = image.size.x;
-        float img_height = image.size.y;
+        float img_width = image->size.x;
+        float img_height = image->size.y;
         float screen_width = this->size.x;
         float screen_height = this->size.y;
 
@@ -99,7 +99,7 @@ void Draw::image(Vector position, Image &image)
         // Ensure width and height are positive
         if (img_width > 0 && img_height > 0)
         {
-            tft.pushImage(x, y, img_width, img_height, image.buffer);
+            tft.pushImage(x, y, img_width, img_height, image->buffer);
         }
     }
 }

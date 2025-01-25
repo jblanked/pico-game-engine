@@ -214,7 +214,7 @@ void Level::render(Game *game)
             {
                 // Adjust drawing position based on camera
                 Vector screen_position = Vector(new_screen_x, new_screen_y);
-                game->draw->image(screen_position, *(ent->sprite));
+                game->draw->image(screen_position, ent->sprite);
             }
         }
     }

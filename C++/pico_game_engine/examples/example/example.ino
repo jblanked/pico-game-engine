@@ -1,38 +1,51 @@
 #include "Arduino.h"
 #include "PicoGameEngine.h" // https://github.com/jblanked/pico-game-engine/tree/main/C%2B%2B
 /*
-    Board Manager: Raspberry Pi Pico W
+    Board Manager: Raspberry Pi Pico (even if you are using the Pico W)
     Flash Size: 2MB (Sketch: 1920KB, FS: 128KB)
     CPU Speed: 133MHz (or overclocked to 200MHz)
 */
 
-/* Handle input for the player entity */
-void game_input(Entity *player, Game *game)
-{
-    Vector newPos = player->position;
-    if (game->input == BUTTON_UP)
-    {
-        newPos.y -= 5;
-    }
-    else if (game->input == BUTTON_DOWN)
-    {
-        newPos.y += 5;
-    }
-    else if (game->input == BUTTON_LEFT)
-    {
-        newPos.x -= 5;
-    }
-    else if (game->input == BUTTON_RIGHT)
-    {
-        newPos.x += 5;
-    }
-    player->position_set(newPos);
-}
-
 /* Update the player entity using current game input */
-void player_update(Entity *player, Game *game)
+void player_update(Entity *self, Game *game)
 {
-    game_input(player, game);
+    Vector oldPos = self->position;
+    Vector newPos = oldPos;
+
+    // Move according to input
+    if (game->input == BUTTON_UP)
+        newPos.y -= 10;
+    else if (game->input == BUTTON_DOWN)
+        newPos.y += 10;
+    else if (game->input == BUTTON_LEFT)
+        newPos.x -= 10;
+    else if (game->input == BUTTON_RIGHT)
+        newPos.x += 10;
+
+    // set new position
+    self->position_set(newPos);
+
+    // check if new position is within the level boundaries
+    if (newPos.x < 0 || newPos.x + self->size.x > game->current_level->size.x ||
+        newPos.y < 0 || newPos.y + self->size.y > game->current_level->size.y)
+    {
+        // restore old position
+        self->position_set(oldPos);
+    }
+
+    // Store the current camera position before updating
+    game->old_pos = game->pos;
+
+    // Update camera position to center the player
+    float camera_x = self->position.x - (game->size.x / 2);
+    float camera_y = self->position.y - (game->size.y / 2);
+
+    // Clamp camera position to the world boundaries
+    camera_x = constrain(camera_x, 0, game->current_level->size.x - game->size.x);
+    camera_y = constrain(camera_y, 0, game->current_level->size.y - game->size.y);
+
+    // Set the new camera position
+    game->pos = Vector(camera_x, camera_y);
 }
 
 /* Render the player entity along with game information */
@@ -66,6 +79,9 @@ void setup()
 
     // Create the game instance with its name, start/stop callbacks, and colors.
     Game *game = new Game("Pico Game Engine", Vector(320, 240), NULL, NULL, TFT_RED, TFT_WHITE);
+
+    // set world size
+    game->world_size = game->size;
 
     // Add input buttons (using the D-pad mapping)
     game->input_add(new Input(16, BUTTON_UP));
@@ -101,19 +117,18 @@ void setup()
 
     Entity *player = new Entity(
         "Player",
-        player_left_naked_10x10px,
-        Vector(10, 10),
+        ENTITY_PLAYER,
         Vector(160, 120), // Initial position
-        NULL,             // No custom initialization routine
-        NULL,             // No custom destruction routine
-        player_update,    // Update callback
-        player_render,    // Render callback
-        NULL,             // No collision callback
-        true              // is a player flag
+        Vector(10, 10),
+        player_left_naked_10x10px,
+        NULL,          // No sprite left
+        NULL,          // No sprite right
+        NULL,          // No custom initialization routine
+        NULL,          // No custom destruction routine
+        player_update, // Update callback
+        player_render, // Render callback
+        NULL           // No collision callback
     );
-
-    // Set the game position to the player's initial position for camera centering
-    game->pos = player->position;
 
     // Add the player entity to the level
     level->entity_add(player);
