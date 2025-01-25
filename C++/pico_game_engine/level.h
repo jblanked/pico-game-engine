@@ -2,6 +2,8 @@
 #include "Arduino.h"
 #include "vector.h"
 
+#define MAX_ENTITIES 500
+
 class Game;
 class Entity;
 
@@ -9,8 +11,10 @@ class Level
 {
 public:
     const char *name;
+    Game *game;
     Vector size;
     int entity_count;
+    Entity *entities[MAX_ENTITIES];
 
     Level(); // Default constructor
     Level(const char *name,
@@ -30,10 +34,6 @@ public:
     void start();
     void stop();
     void update(Game *game);
-
-    Entity **entities;
-
-    Game *game;
 
 private:
     void (*_start)(Level);

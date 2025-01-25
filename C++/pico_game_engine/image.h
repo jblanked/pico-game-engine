@@ -34,3 +34,48 @@ public:
     bool open_image(const char *path);                // Open a 16-bit BMP file from a given path and load its pixel data.
     bool create_image_buffer();                       // Create an image buffer by flipping the BMP’s bottom-up data into a top-down buffer.
 };
+
+#include <map>
+#include <string>
+
+class ImageManager
+{
+public:
+    static ImageManager &getInstance()
+    {
+        static ImageManager instance;
+        return instance;
+    }
+
+    Image *getImage(const char *name, uint8_t *data, Vector size)
+    {
+        std::string key(name);
+        if (images.find(key) == images.end())
+        {
+            Image *img = new Image();
+            if (!img->from_byte_array(data, size))
+            {
+                delete img;
+                return nullptr;
+            }
+            images[key] = img;
+        }
+        return images[key];
+    }
+
+    ~ImageManager()
+    {
+        for (auto &pair : images)
+        {
+            delete pair.second;
+        }
+    }
+
+private:
+    std::map<std::string, Image *> images;
+
+    // Private constructor to enforce singleton pattern
+    ImageManager() {}
+    ImageManager(const ImageManager &) = delete;
+    void operator=(const ImageManager &) = delete;
+};

@@ -8,9 +8,12 @@ Level::Level()
       game(nullptr),
       _start(nullptr),
       _stop(nullptr),
-      entity_count(0),
-      entities(nullptr)
+      entity_count(0)
 {
+    for (int i = 0; i < MAX_ENTITIES; i++)
+    {
+        entities[i] = nullptr;
+    }
 }
 
 Level::Level(const char *name, Vector size, Game *game, void (*start)(Level), void (*stop)(Level))
@@ -19,34 +22,31 @@ Level::Level(const char *name, Vector size, Game *game, void (*start)(Level), vo
       game(game),
       _start(start),
       _stop(stop),
-      entity_count(0),
-      entities(nullptr)
+      entity_count(0)
 {
+    for (int i = 0; i < MAX_ENTITIES; i++)
+    {
+        entities[i] = nullptr;
+    }
 }
 
 Level::~Level()
 {
-    // Ensure all entities are properly stopped and memory is freed
     this->clear();
 }
 
 void Level::clear()
 {
-    // Stop and deallocate all entities
-    if (this->entities != nullptr)
+    for (int i = 0; i < entity_count; i++)
     {
-        for (int i = 0; i < this->entity_count; i++)
+        if (entities[i] != nullptr)
         {
-            if (this->entities[i] != nullptr)
-            {
-                this->entities[i]->stop(this->game);
-                this->entities[i] = nullptr;
-            }
+            entities[i]->stop(this->game);
+            delete entities[i];
+            entities[i] = nullptr;
         }
-        delete[] this->entities;
-        this->entities = nullptr;
-        this->entity_count = 0;
     }
+    entity_count = 0;
 }
 
 Entity **Level::collision_list(Entity *entity, int &count)
@@ -74,24 +74,14 @@ Entity **Level::collision_list(Entity *entity, int &count)
 
 void Level::entity_add(Entity *entity)
 {
-    // Create a new array with size entity_count + 1
-    Entity **new_entities = new Entity *[this->entity_count + 1];
-
-    // Copy existing pointers
-    for (int i = 0; i < this->entity_count; i++)
+    if (entity_count >= MAX_ENTITIES)
     {
-        new_entities[i] = this->entities[i];
+        delete entity; // Prevent memory leak
+        return;
     }
 
-    // Add the new entity at the end
-    new_entities[this->entity_count] = entity;
-
-    // Free old array
-    delete[] this->entities;
-
-    // Update the pointer and count
-    this->entities = new_entities;
-    this->entity_count++;
+    entities[entity_count] = entity;
+    entity_count++;
 
     // Start the new entity
     entity->start(this->game);
@@ -100,50 +90,34 @@ void Level::entity_add(Entity *entity)
 
 void Level::entity_remove(Entity *entity)
 {
-    if (this->entity_count == 0 || this->entities == nullptr)
+    if (entity_count == 0)
         return;
 
-    // Find the index of the entity to remove
     int remove_index = -1;
-    for (int i = 0; i < this->entity_count; i++)
+    for (int i = 0; i < entity_count; i++)
     {
-        if (this->entities[i] == entity)
+        if (entities[i] == entity)
         {
             remove_index = i;
             break;
         }
     }
 
-    // If not found, do nothing
     if (remove_index == -1)
         return;
 
     // Stop the entity
-    this->entities[remove_index]->stop(this->game);
+    entities[remove_index]->stop(this->game);
+    delete entities[remove_index]; // Free memory
 
-    // Create new array of size (entity_count - 1)
-    Entity **new_entities = nullptr;
-    if (this->entity_count - 1 > 0)
+    // Shift remaining entities
+    for (int i = remove_index; i < entity_count - 1; i++)
     {
-        new_entities = new Entity *[this->entity_count - 1];
+        entities[i] = entities[i + 1];
     }
 
-    // Copy everything except the removed entity
-    int j = 0;
-    for (int i = 0; i < this->entity_count; i++)
-    {
-        if (i != remove_index)
-        {
-            new_entities[j++] = this->entities[i];
-        }
-    }
-
-    // Free old array
-    delete[] this->entities;
-
-    // Update pointer and count
-    this->entities = new_entities;
-    this->entity_count--;
+    entities[entity_count - 1] = nullptr;
+    entity_count--;
 }
 
 bool Level::has_collided(Entity *entity)

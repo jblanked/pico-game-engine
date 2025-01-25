@@ -74,15 +74,23 @@ Entity::Entity(
     this->size = size;
     this->sprite = new Image();
     this->sprite->from_byte_array(sprite_data, size);
-    this->sprite_left = new Image();
     if (sprite_left_data != NULL)
     {
+        this->sprite_left = new Image();
         this->sprite_left->from_byte_array(sprite_left_data, size);
     }
-    this->sprite_right = new Image();
+    else
+    {
+        this->sprite_left = NULL;
+    }
     if (sprite_right_data != NULL)
     {
+        this->sprite_right = new Image();
         this->sprite_right->from_byte_array(sprite_right_data, size);
+    }
+    else
+    {
+        this->sprite_right = NULL;
     }
     this->_start = start;
     this->_stop = stop;

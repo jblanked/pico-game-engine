@@ -1,17 +1,25 @@
 #include "icon.h"
-#include <string.h>
+#include <ArduinoJson.h>
+#include "assets.h"
 
-IconContext icon_context_get(const char *name)
+typedef struct
+{
+    const char *name;
+    uint8_t *data;
+    Vector size;
+} IconContext;
+
+static IconContext icon_context_get(const char *name)
 {
     if (strcmp(name, "tree") == 0)
         return {name, icon_tree_16x16, Vector(16, 16)};
     if (strcmp(name, "fence") == 0)
         return {name, icon_fence_16x8px, Vector(16, 8)};
-    if (strcmp(name, "fench_end") == 0)
+    if (strcmp(name, "fence_end") == 0)
         return {name, icon_fence_end_16x8px, Vector(16, 8)};
-    if (strcmp(name, "fench_vertical_end") == 0)
+    if (strcmp(name, "fence_vertical_end") == 0)
         return {name, icon_fence_vertical_end_6x8px, Vector(6, 8)};
-    if (strcmp(name, "fench_vertical_start") == 0)
+    if (strcmp(name, "fence_vertical_start") == 0)
         return {name, icon_fence_vertical_start_6x15px, Vector(6, 15)};
     if (strcmp(name, "rock_small") == 0)
         return {name, icon_rock_small_10x8px, Vector(10, 8)};
@@ -54,7 +62,7 @@ static void icon_collision(Entity *self, Entity *other, Game *game)
     // Check collision
     if (game->current_level->is_collision(self, other))
     {
-        if (other->name == "Player")
+        if (strcmp(other->name, "Player") == 0)
         {
             Vector newPos = other->position;
             // bounce the player back
@@ -74,15 +82,42 @@ static void icon_collision(Entity *self, Entity *other, Game *game)
 
 void icon_spawn(Level *level, const char *name, Vector pos)
 {
-    // get the icon context
+    // Get the icon context
     IconContext icon = icon_context_get(name);
 
-    // check if the icon is valid
+    // Check if the icon is valid
     if (icon.data == NULL)
+    {
         return;
+    }
 
-    // add the icon to the level
-    level->entity_add(new Entity(icon.name, icon.data, icon.size, pos, NULL, NULL, NULL, NULL, icon_collision, false));
+    // Retrieve shared Image instance
+    Image *sharedImage = ImageManager::getInstance().getImage(name, icon.data, icon.size);
+    if (sharedImage == nullptr)
+    {
+        return;
+    }
+
+    // Add the icon to the level
+    Entity *newEntity = new Entity(
+        icon.name,
+        ENTITY_ICON,
+        pos,
+        icon.size,
+        icon.data,
+        NULL, // sprite_left_data
+        NULL, // sprite_right_data
+        NULL, // start
+        NULL, // stop
+        NULL, // update
+        NULL, // render
+        icon_collision);
+
+    // Assign the shared Image to the entity
+    newEntity->sprite = sharedImage;
+
+    // Add to level
+    level->entity_add(newEntity);
 }
 
 void icon_spawn_line(Level *level, const char *name, Vector pos, int amount, bool horizontal, int spacing)
@@ -99,13 +134,13 @@ void icon_spawn_line(Level *level, const char *name, Vector pos, int amount, boo
     }
 }
 
+// icon.cpp
 void icon_spawn_json(Level *level, const char *json)
 {
-    // check heap
+    // Check heap
     size_t freeHeap = rp2040.getFreeHeap();
     if (freeHeap < 4096)
     {
-        // Print error (later)
         return;
     }
 
@@ -116,24 +151,20 @@ void icon_spawn_json(Level *level, const char *json)
     // Check for errors
     if (error)
     {
-        // Print error (later)
         return;
     }
 
     // Loop through the json data
-    for (int i = 0; i < MAX_ICONS; i++)
+    int index = 0;
+    while (doc["json_data"][index]["icon"])
     {
-        const char *icon = doc["json_data"][i]["icon"];
-        if (!icon)
-        {
-            break;
-        }
-        float x = doc["json_data"][i]["x"];
-        float y = doc["json_data"][i]["y"];
-        int amount = doc["json_data"][i]["amount"];
-        bool horizontal = doc["json_data"][i]["horizontal"];
+        const char *icon = doc["json_data"][index]["icon"];
+        float x = doc["json_data"][index]["x"];
+        float y = doc["json_data"][index]["y"];
+        int amount = doc["json_data"][index]["amount"];
+        bool horizontal = doc["json_data"][index]["horizontal"];
 
-        // check the amount
+        // Check the amount
         if (amount > 1)
         {
             icon_spawn_line(level, icon, Vector(x, y), amount, horizontal);
@@ -142,5 +173,7 @@ void icon_spawn_json(Level *level, const char *json)
         {
             icon_spawn(level, icon, Vector(x, y));
         }
+
+        index++;
     }
 }
