@@ -260,6 +260,9 @@ static void player_update(Entity *self, Game *game)
         self->direction = ENTITY_RIGHT;
     }
 
+    // reset input
+    game->input = -1;
+
     // Tentatively set new position
     self->position_set(newPos);
 
