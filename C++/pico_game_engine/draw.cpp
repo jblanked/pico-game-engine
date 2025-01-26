@@ -64,43 +64,13 @@ void Draw::color(uint16_t color)
 
 void Draw::image(Vector position, Image *image)
 {
-    if (image->buffer != nullptr)
+    if (image->buffer != nullptr &&
+        position.x < this->size.x &&
+        position.y < this->size.y &&
+        image->size.x > 0 &&
+        image->size.y > 0)
     {
-        // Calculate clipping boundaries
-        float x = position.x;
-        float y = position.y;
-        float img_width = image->size.x;
-        float img_height = image->size.y;
-        float screen_width = this->size.x;
-        float screen_height = this->size.y;
-
-        // Check horizontal boundaries
-        if (x < 0)
-        {
-            img_width += x; // Reduce width by the negative offset
-            x = 0;
-        }
-        if (x + img_width > screen_width)
-        {
-            img_width = screen_width - x;
-        }
-
-        // Check vertical boundaries
-        if (y < 0)
-        {
-            img_height += y; // Reduce height by the negative offset
-            y = 0;
-        }
-        if (y + img_height > screen_height)
-        {
-            img_height = screen_height - y;
-        }
-
-        // Ensure width and height are positive
-        if (img_width > 0 && img_height > 0)
-        {
-            tft.pushImage(x, y, img_width, img_height, image->buffer);
-        }
+        tft.drawRGBBitmap(position.x, position.y, image->buffer, image->size.x, image->size.y);
     }
 }
 
