@@ -47,7 +47,7 @@ static void enemy_update(Entity *self, Game *game)
     case ENTITY_IDLE:
         // Increment the elapsed_move_timer
         self->elapsed_move_timer += delta_time;
-
+        self->position_set(self->position);
         // Check if it's time to move again
         if (self->elapsed_move_timer >= self->move_timer)
         {
@@ -60,7 +60,6 @@ static void enemy_update(Entity *self, Game *game)
             {
                 self->state = ENTITY_MOVING_TO_START;
             }
-
             // Reset the elapsed_move_timer
             self->elapsed_move_timer = 0;
         }
@@ -123,6 +122,12 @@ static void enemy_update(Entity *self, Game *game)
         // Set the new position
         self->position_set(new_pos);
 
+        // force update/redraw of all entities in the level
+        for (int i = 0; i < game->current_level->entity_count; i++)
+        {
+            game->current_level->entities[i]->position_changed = true;
+        }
+
         // Check if the enemy has reached or surpassed the target_position
         bool reached_x = fabs(new_pos.x - target_position.x) < 1;
         bool reached_y = fabs(new_pos.y - target_position.y) < 1;
@@ -132,6 +137,8 @@ static void enemy_update(Entity *self, Game *game)
             // Set the state to idle
             self->state = ENTITY_IDLE;
             self->elapsed_move_timer = 0;
+
+            self->position_changed = true;
         }
         break;
     }
@@ -143,10 +150,12 @@ static void enemy_render(Entity *self, Draw *draw, Game *game)
     if (self->direction == ENTITY_LEFT)
     {
         self->sprite = self->sprite_left;
+        self->size = self->sprite_left->size;
     }
     else if (self->direction == ENTITY_RIGHT)
     {
         self->sprite = self->sprite_right;
+        self->size = self->sprite_right->size;
     }
 }
 

@@ -28,9 +28,6 @@ void setup()
     Level *level = new Level("Level 1", Vector(768, 384), game);
     game->level_add(level);
 
-    // Add the player entity to the level
-    player_spawn(level, "sword", Vector(384, 192));
-
     // set game position to center of player
     game->pos = Vector(384, 192);
     game->old_pos = game->pos;
@@ -72,6 +69,9 @@ void setup()
 
     // spawn enemys from json
     enemy_spawn_json(level, json_data);
+
+    // Add the player entity to the level
+    player_spawn(level, "sword", Vector(384, 192));
 
     // Create the game engine (with 30 frames per second target).
     GameEngine *engine = new GameEngine("Pico Game Engine", 30, game);
