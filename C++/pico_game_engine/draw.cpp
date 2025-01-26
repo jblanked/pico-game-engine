@@ -70,7 +70,7 @@ void Draw::image(Vector position, Image *image)
         image->size.x > 0 &&
         image->size.y > 0)
     {
-        tft.drawRGBBitmap(position.x, position.y, image->buffer, image->size.x, image->size.y);
+        tft.pushImage(position.x, position.y, image->size.x, image->size.y, image->buffer);
     }
 }
 

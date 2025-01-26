@@ -172,7 +172,7 @@ void Level::render(Game *game)
                 int w = (int)ent->size.x;
                 int h = (int)ent->size.y;
 
-                game->draw->clear(Vector(old_sx, old_sy), Vector(w, h));
+                game->draw->clear(Vector(old_sx, old_sy), Vector(w, h), game->bg_color);
             }
         }
     }
