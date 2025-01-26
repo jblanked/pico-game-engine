@@ -33,12 +33,121 @@ static PlayerContext player_context_get(const char *name, bool is_left)
 
 static void enemy_update(Entity *self, Game *game)
 {
-    // skip for now
+    // check if enemy is dead
+    if (self->state == ENTITY_DEAD)
+    {
+        return;
+    }
+
+    // float delta_time = 1.0 / game->fps;
+    float delta_time = 1.0 / 30;
+
+    switch (self->state)
+    {
+    case ENTITY_IDLE:
+        // Increment the elapsed_move_timer
+        self->elapsed_move_timer += delta_time;
+
+        // Check if it's time to move again
+        if (self->elapsed_move_timer >= self->move_timer)
+        {
+            // Determine the next state based on the current position
+            if (fabs(self->position.x - self->start_position.x) < 1 && fabs(self->position.y - self->start_position.y) < 1)
+            {
+                self->state = ENTITY_MOVING_TO_END;
+            }
+            else if (fabs(self->position.x - self->end_position.x) < 1 && fabs(self->position.y - self->end_position.y) < 1)
+            {
+                self->state = ENTITY_MOVING_TO_START;
+            }
+
+            // Reset the elapsed_move_timer
+            self->elapsed_move_timer = 0;
+        }
+        break;
+    case ENTITY_MOVING_TO_END:
+    case ENTITY_MOVING_TO_START:
+        // Determine the target position based on the current state
+        Vector target_position = self->state == ENTITY_MOVING_TO_END ? self->end_position : self->start_position;
+
+        // Get current position
+        Vector current_position = self->position;
+        Vector direction_vector = {0, 0};
+
+        // Calculate direction towards the target
+        if (current_position.x < target_position.x)
+        {
+            direction_vector.x = 1;
+            self->direction = ENTITY_RIGHT;
+        }
+        else if (current_position.x > target_position.x)
+        {
+            direction_vector.x = -1;
+            self->direction = ENTITY_LEFT;
+        }
+        else if (current_position.y < target_position.y)
+        {
+            direction_vector.y = 1;
+            self->direction = ENTITY_DOWN;
+        }
+        else if (current_position.y > target_position.y)
+        {
+            direction_vector.y = -1;
+            self->direction = ENTITY_UP;
+        }
+
+        // Normalize direction vector
+        float length = sqrt(direction_vector.x * direction_vector.x + direction_vector.y * direction_vector.y);
+        if (length != 0)
+        {
+            direction_vector.x /= length;
+            direction_vector.y /= length;
+        }
+
+        // Update position based on direction and speed
+        Vector new_pos = current_position;
+        new_pos.x += direction_vector.x * self->speed * delta_time;
+        new_pos.y += direction_vector.y * self->speed * delta_time;
+
+        // Clamp the position to the target to prevent overshooting
+        if ((direction_vector.x > 0 && new_pos.x > target_position.x) || (direction_vector.x < 0 && new_pos.x < target_position.x))
+        {
+            new_pos.x = target_position.x;
+        }
+
+        if ((direction_vector.y > 0 && new_pos.y > target_position.y) || (direction_vector.y < 0 && new_pos.y < target_position.y))
+        {
+            new_pos.y = target_position.y;
+        }
+
+        // Set the new position
+        self->position_set(new_pos);
+
+        // Check if the enemy has reached or surpassed the target_position
+        bool reached_x = fabs(new_pos.x - target_position.x) < 1;
+        bool reached_y = fabs(new_pos.y - target_position.y) < 1;
+
+        if (reached_x && reached_y)
+        {
+            // Set the state to idle
+            self->state = ENTITY_IDLE;
+            self->elapsed_move_timer = 0;
+        }
+        break;
+    }
 }
 
 static void enemy_render(Entity *self, Draw *draw, Game *game)
 {
-    // skip for now
+    // Choose sprite based on direction
+    if (self->direction == ENTITY_LEFT)
+    {
+        self->sprite = self->sprite_left;
+    }
+    else if (self->direction == ENTITY_RIGHT)
+    {
+        self->sprite = self->sprite_right;
+    }
 }
 
 void enemy_spawn(
