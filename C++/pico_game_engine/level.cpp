@@ -158,6 +158,11 @@ void Level::render(Game *game)
         Entity *ent = this->entities[i];
         if (ent != nullptr && ent->is_active)
         {
+            // skip entities that haven't moved
+            if (!ent->position_changed && ent->old_position != ent->position)
+            {
+                continue;
+            }
             // Calculate old screen position based on OLD camera position and ENTITY's OLD position
             float old_screen_x = ent->old_position.x - old_camera_x;
             float old_screen_y = ent->old_position.y - old_camera_y;
@@ -183,6 +188,11 @@ void Level::render(Game *game)
         Entity *ent = this->entities[i];
         if (ent != nullptr && ent->is_active)
         {
+            // skip entities that haven't moved
+            if (!ent->position_changed && ent->old_position != ent->position)
+            {
+                continue;
+            }
             // Calculate new screen position based on CURRENT camera position and ENTITY's CURRENT position
             float new_screen_x = ent->position.x - camera_x;
             float new_screen_y = ent->position.y - camera_y;
