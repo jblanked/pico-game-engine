@@ -152,6 +152,7 @@ void Level::render(Game *game)
     float screen_width = game->size.x;
     float screen_height = game->size.y;
 
+    // Phase 1: Clear all old positions
     for (int i = 0; i < this->entity_count; i++)
     {
         Entity *ent = this->entities[i];
@@ -161,16 +162,30 @@ void Level::render(Game *game)
             float old_screen_x = ent->old_position.x - old_camera_x;
             float old_screen_y = ent->old_position.y - old_camera_y;
 
-            // Calculate new screen position based on CURRENT camera position and ENTITY's CURRENT position
-            float new_screen_x = ent->position.x - camera_x;
-            float new_screen_y = ent->position.y - camera_y;
-
             // Clear the old screen position if it was within the screen
             if (!(old_screen_x + ent->size.x < 0 || old_screen_x > screen_width ||
                   old_screen_y + ent->size.y < 0 || old_screen_y > screen_height))
             {
-                game->draw->clear(Vector(old_screen_x, old_screen_y), ent->size, game->bg_color);
+                int old_sx = (int)floor(old_screen_x);
+                int old_sy = (int)floor(old_screen_y);
+
+                int w = (int)ent->size.x;
+                int h = (int)ent->size.y;
+
+                game->draw->clear(Vector(old_sx, old_sy), Vector(w, h));
             }
+        }
+    }
+
+    // Phase 2: Draw all entities in new positions
+    for (int i = 0; i < this->entity_count; i++)
+    {
+        Entity *ent = this->entities[i];
+        if (ent != nullptr && ent->is_active)
+        {
+            // Calculate new screen position based on CURRENT camera position and ENTITY's CURRENT position
+            float new_screen_x = ent->position.x - camera_x;
+            float new_screen_y = ent->position.y - camera_y;
 
             // Check if the entity is within the visible screen area in the new position
             if (new_screen_x + ent->size.x < 0 || new_screen_x > screen_width ||
@@ -187,12 +202,14 @@ void Level::render(Game *game)
             if (ent->sprite && ent->sprite->size.x > 0)
             {
                 // Adjust drawing position based on camera
-                Vector screen_position = Vector(new_screen_x, new_screen_y);
-                game->draw->image(screen_position, ent->sprite);
+                int new_sx = (int)floor(new_screen_x);
+                int new_sy = (int)floor(new_screen_y);
+                game->draw->image(Vector(new_sx, new_sy), ent->sprite);
             }
         }
     }
 }
+
 void Level::start()
 {
     if (this->_start != nullptr)
