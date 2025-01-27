@@ -53,8 +53,6 @@ public:
     void text(Vector position, const char *text, int font);                 // Draws text on the display at the specified position with the specified font.
     void text(Vector position, const char *text, int font, uint16_t color); // Draws text on the display at the specified position with the specified font and color.
     Vector size;                                                            // The size of the display.
-
-private:
-    TFT_eSPI tft = TFT_eSPI(); // Invoke custom library
-    int rotation = 0;          // The rotation of the display.
+    TFT_eSPI tft = TFT_eSPI();                                              // Invoke custom library
+    int rotation = 0;                                                       // The rotation of the display.
 };
