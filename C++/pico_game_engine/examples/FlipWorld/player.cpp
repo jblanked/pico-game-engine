@@ -259,6 +259,22 @@ static void player_update(Entity *self, Game *game)
         newPos.x += 10;
         self->direction = ENTITY_RIGHT;
     }
+    // else
+    // {
+    //     // No input, so no movement
+
+    //     // Update camera position to center the player
+    //     float camera_x = self->position.x - (game->size.x / 2);
+    //     float camera_y = self->position.y - (game->size.y / 2);
+
+    //     // Clamp camera position to the world boundaries
+    //     camera_x = constrain(camera_x, 0, game->current_level->size.x - game->size.x);
+    //     camera_y = constrain(camera_y, 0, game->current_level->size.y - game->size.y);
+
+    //     // Set the new camera position
+    //     game->pos = Vector(camera_x, camera_y);
+    //     return;
+    // }
 
     // reset input
     game->input = -1;
