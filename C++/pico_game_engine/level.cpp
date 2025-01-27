@@ -144,78 +144,26 @@ bool Level::is_collision(Entity *a, Entity *b)
 
 void Level::render(Game *game)
 {
-    // Retrieve old and current camera positions
-    float old_camera_x = game->old_pos.x;
-    float old_camera_y = game->old_pos.y;
-    float camera_x = game->pos.x;
-    float camera_y = game->pos.y;
-    float screen_width = game->size.x;
-    float screen_height = game->size.y;
-
-    // Phase 1: Clear all old positions
     for (int i = 0; i < this->entity_count; i++)
     {
         Entity *ent = this->entities[i];
         if (ent != nullptr && ent->is_active)
         {
-            // skip entities that haven't moved
-            if (!ent->position_changed && ent->old_position != ent->position)
-            {
-                continue;
-            }
             // Calculate old screen position based on OLD camera position and ENTITY's OLD position
-            float old_screen_x = ent->old_position.x - old_camera_x;
-            float old_screen_y = ent->old_position.y - old_camera_y;
+            float old_screen_x = ent->old_position.x - game->old_pos.x;
+            float old_screen_y = ent->old_position.y - game->old_pos.y;
 
             // Clear the old screen position if it was within the screen
-            if (!(old_screen_x + ent->size.x < 0 || old_screen_x > screen_width ||
-                  old_screen_y + ent->size.y < 0 || old_screen_y > screen_height))
-            {
-                int old_sx = (int)floor(old_screen_x);
-                int old_sy = (int)floor(old_screen_y);
-
-                int w = (int)ent->size.x;
-                int h = (int)ent->size.y;
-
-                game->draw->clear(Vector(old_sx, old_sy), Vector(w, h), game->bg_color);
-            }
-        }
-    }
-
-    // Phase 2: Draw all entities in new positions
-    for (int i = 0; i < this->entity_count; i++)
-    {
-        Entity *ent = this->entities[i];
-        if (ent != nullptr && ent->is_active)
-        {
-            // skip entities that haven't moved
-            if (!ent->position_changed && ent->old_position != ent->position)
-            {
-                continue;
-            }
-            // Calculate new screen position based on CURRENT camera position and ENTITY's CURRENT position
-            float new_screen_x = ent->position.x - camera_x;
-            float new_screen_y = ent->position.y - camera_y;
-
-            // Check if the entity is within the visible screen area in the new position
-            if (new_screen_x + ent->size.x < 0 || new_screen_x > screen_width ||
-                new_screen_y + ent->size.y < 0 || new_screen_y > screen_height)
-            {
-                // Entity is outside the visible area; skip rendering
-                continue;
-            }
+            if (!(old_screen_x + ent->size.x < 0 || old_screen_x > game->size.x ||
+                  old_screen_y + ent->size.y < 0 || old_screen_y > game->size.y))
+                game->draw->clear(Vector(old_screen_x, old_screen_y), Vector(ent->size.x, ent->size.y), game->bg_color);
 
             // Run any custom rendering code
             ent->render(game->draw, game);
 
             // Draw the entity’s sprite if available
-            if (ent->sprite && ent->sprite->size.x > 0)
-            {
-                // Adjust drawing position based on camera
-                int new_sx = (int)floor(new_screen_x);
-                int new_sy = (int)floor(new_screen_y);
-                game->draw->image(Vector(new_sx, new_sy), ent->sprite);
-            }
+            if (ent->sprite != nullptr)
+                game->draw->image(Vector(ent->position.x - game->pos.x, ent->position.y - game->pos.y), ent->sprite);
         }
     }
 }
