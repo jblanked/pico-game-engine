@@ -167,6 +167,14 @@ static void enemy_render(Entity *self, Draw *draw, Game *game)
         self->sprite = self->sprite_right;
         self->size = self->sprite_right->size;
     }
+
+    // clear the username's previous position
+    draw->clear(Vector(self->old_position.x - game->old_pos.x - (strlen(self->name) * 2), self->old_position.y - game->old_pos.y - 10), Vector(strlen(self->name) * 5 + 8, 10), TFT_WHITE);
+
+    // draw health of enemy
+    char health_str[32];
+    snprintf(health_str, sizeof(health_str), "%.0f", (double)self->health);
+    draw_username(game, self->position, health_str);
 }
 
 void enemy_spawn(
