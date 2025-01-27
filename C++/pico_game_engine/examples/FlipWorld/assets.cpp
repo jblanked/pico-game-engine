@@ -24,7 +24,7 @@ char shadow_woods_v4[2210] = R"json(
     ],
     "enemy_data": [
         {"id": "cyclops", "index": 0, "start_position": {"x": 350, "y": 200}, "end_position": {"x": 390, "y": 200}, "move_timer": 2, "speed": 30, "attack_timer": 0.4, "strength": 10, "health": 100},
-        {"id": "ogre", "index": 1, "start_position": {"x": 200, "y": 300}, "end_position": {"x": 220, "y": 300}, "move_timer": 2.5, "speed": 45, "attack_timer": 0.6, "strength": 20, "health": 200},
+        {"id": "ogre", "index": 1, "start_position": {"x": 200, "y": 320}, "end_position": {"x": 220, "y": 320}, "move_timer": 0.5, "speed": 45, "attack_timer": 0.6, "strength": 20, "health": 200},
         {"id": "ghost", "index": 2, "start_position": {"x": 100, "y": 80}, "end_position": {"x": 180, "y": 85}, "move_timer": 2.2, "speed": 55, "attack_timer": 0.5, "strength": 30, "health": 300},
         {"id": "ogre", "index": 3, "start_position": {"x": 400, "y": 50}, "end_position": {"x": 490, "y": 50}, "move_timer": 1.7, "speed": 35, "attack_timer": 1.0, "strength": 20, "health": 200}
     ]
