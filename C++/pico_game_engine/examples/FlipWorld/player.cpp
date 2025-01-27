@@ -144,6 +144,16 @@ static void enemy_update(Entity *self, Game *game)
     }
 }
 
+static void draw_username(Game *game, Vector pos, const char *username)
+{
+    // first draw a white rectangle, as an "overlay", to make the text more readable
+    // draw box around the username
+    game->draw->tft.fillRect(pos.x - game->pos.x - (strlen(username) * 2), pos.y - game->pos.y - 10, strlen(username) * 5 + 4, 10, TFT_WHITE);
+
+    // draw username over player's head
+    game->draw->text(Vector(pos.x - game->pos.x - (strlen(username) * 2), pos.y - game->pos.y - 10), username, 1, TFT_RED);
+}
+
 static void enemy_render(Entity *self, Draw *draw, Game *game)
 {
     // Choose sprite based on direction
@@ -323,10 +333,10 @@ static void player_update(Entity *self, Game *game)
 
 static void player_render(Entity *self, Draw *draw, Game *game)
 {
-    /*
-        Draw anything extra here
-        The engine will draw the player entity
-    */
+    // clear the username's previous position
+    draw->clear(Vector(self->old_position.x - game->old_pos.x - (strlen("Player") * 2), self->old_position.y - game->old_pos.y - 10), Vector(strlen("Player") * 5 + 8, 10), TFT_WHITE);
+    // draw the username at the new position
+    draw_username(game, self->position, "Player");
 }
 
 void player_spawn(Level *level, const char *name, Vector position)
