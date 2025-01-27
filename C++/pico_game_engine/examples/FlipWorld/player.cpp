@@ -339,12 +339,37 @@ static void player_update(Entity *self, Game *game)
     }
 }
 
+// Draw the user stats (health, xp, and level)
+static void draw_user_stats(Entity *self, Vector pos, Game *game)
+{
+    // first draw a white rectangle to make the text more readable
+    game->draw->tft.fillRect(pos.x - 2, pos.y - 5, 40, 32, TFT_WHITE);
+
+    char health[32];
+    char xp[32];
+    char level[32];
+
+    snprintf(health, sizeof(health), "HP : %ld", self->health);
+    snprintf(level, sizeof(level), "LVL: %ld", self->level);
+
+    if (self->xp < 10000)
+        snprintf(xp, sizeof(xp), "XP : %ld", self->xp);
+    else
+        snprintf(xp, sizeof(xp), "XP : %ldK", self->xp / 1000);
+
+    // draw items
+    game->draw->text(Vector(pos.x, pos.y), health, 1, TFT_RED);
+    game->draw->text(Vector(pos.x, pos.y + 9), xp, 1, TFT_RED);
+    game->draw->text(Vector(pos.x, pos.y + 18), level, 1, TFT_RED);
+}
+
 static void player_render(Entity *self, Draw *draw, Game *game)
 {
     // clear the username's previous position
     draw->clear(Vector(self->old_position.x - game->old_pos.x - (strlen("Player") * 2), self->old_position.y - game->old_pos.y - 10), Vector(strlen("Player") * 5 + 8, 10), TFT_WHITE);
     // draw the username at the new position
     draw_username(game, self->position, "Player");
+    draw_user_stats(self, Vector(5, 210), game);
 }
 
 void player_spawn(Level *level, const char *name, Vector position)
@@ -357,6 +382,10 @@ void player_spawn(Level *level, const char *name, Vector position)
     if (player_left.data != NULL && player_right.data != NULL)
     {
         // Create the player entity
-        level->entity_add(new Entity("Player", ENTITY_PLAYER, position, player_left.size, player_left.data, player_left.data, player_right.data, NULL, NULL, player_update, player_render, NULL));
+        Entity *player = new Entity("Player", ENTITY_PLAYER, position, player_left.size, player_left.data, player_left.data, player_right.data, NULL, NULL, player_update, player_render, NULL);
+        player->level = 1;
+        player->xp = 0;
+        player->health = 100;
+        level->entity_add(player);
     }
 }
