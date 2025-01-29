@@ -1,6 +1,8 @@
 # from https://github.com/harlepengren/PicoGame/blob/main/picogame/image.py
 # edited by JBlanked on 2025-01-19
 import framebuf
+import array
+import sys
 from .vector import Vector
 
 SEEK_CUR = 1
@@ -26,11 +28,39 @@ class Image:
         self.create_image_buffer()
 
     def from_byte_array(self, data, width, height):
-        """Create an image from a byte array"""
-        if len(data) != width * height * 2:
-            raise ValueError("Data length does not match given width and height!")
+        """
+        Create an image from a byte array, matching the C++ version.
+
+        Args:
+            data (bytes or bytearray): The byte array containing pixel data.
+            width (int): The width of the image.
+            height (int): The height of the image.
+
+        Raises:
+            ValueError: If the length of data does not match width * height * 2.
+        """
+        # Validate data length
+        expected_length = width * height * 2
+        if len(data) != expected_length:
+            raise ValueError(
+                f"Data length {len(data)} does not match expected size {expected_length} (width={width}, height={height})!"
+            )
+
         self.size = Vector(width, height)
-        self.buffer = framebuf.FrameBuffer(data, width, height, framebuf.RGB565)
+
+        # Convert byte array to array of unsigned shorts ('H') in little endian
+        pixel_array = array.array("H")
+        pixel_array.frombytes(data)
+
+        # Ensure the byte order is little endian
+        if sys.byteorder != "little":
+            pixel_array.byteswap()
+
+        # Create FrameBuffer from the bytearray representation of pixel_array
+        byte_buffer = pixel_array.tobytes()
+        self.buffer = framebuf.FrameBuffer(byte_buffer, width, height, framebuf.RGB565)
+
+        return True  # Indicate success
 
     def open_image(self, path):
         """Open a 16-bit BMP file and read the image data"""

@@ -1,12 +1,13 @@
 #pragma once
-#include "vector.h"
-#include "entity.h"
-#include "level.h"
-#include "input.h"
-#include "image.h"
-#include "draw.h"
-#include "game.h"
-#include "engine.h"
+#include "internal/vector.h"
+#include "internal/entity.h"
+#include "internal/level.h"
+#include "internal/input.h"
+#include "internal/image.h"
+#include "internal/draw.h"
+#include "internal/game.h"
+#include "internal/engine.h"
+using namespace PicoGameEngine;
 /*
 Pico Game Engine
 Author: JBlanked
