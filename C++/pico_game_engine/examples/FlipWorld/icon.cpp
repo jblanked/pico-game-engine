@@ -1,6 +1,7 @@
 #include "icon.h"
 #include <ArduinoJson.h>
 #include "assets.h"
+#include "player.h"
 
 typedef struct
 {
@@ -59,28 +60,15 @@ static IconContext icon_context_get(const char *name)
 
 static void icon_collision(Entity *self, Entity *other, Game *game)
 {
-    // Check collision
-    if (game->current_level->is_collision(self, other))
+    if (strcmp(other->name, "Player") == 0)
     {
-        if (strcmp(other->name, "Player") == 0)
-        {
-            Vector newPos = other->position;
-            // bounce the player back
-            if (game->input == BUTTON_UP)
-                newPos.y += self->size.y;
-            else if (game->input == BUTTON_DOWN)
-                newPos.y -= self->size.y;
-            else if (game->input == BUTTON_LEFT)
-                newPos.x += self->size.x;
-            else if (game->input == BUTTON_RIGHT)
-                newPos.x -= self->size.x;
-
-            other->position_set(newPos);
-        }
+        clear_player_username(other, game, true);
+        other->position_set(other->old_position);
+        clear_screan(game);
     }
 }
 
-void icon_spawn(Level *level, const char *name, Vector pos)
+static void icon_spawn(Level *level, const char *name, Vector pos)
 {
     // Get the icon context
     IconContext icon = icon_context_get(name);
@@ -120,7 +108,7 @@ void icon_spawn(Level *level, const char *name, Vector pos)
     level->entity_add(newEntity);
 }
 
-void icon_spawn_line(Level *level, const char *name, Vector pos, int amount, bool horizontal, int spacing)
+static void icon_spawn_line(Level *level, const char *name, Vector pos, int amount, bool horizontal, int spacing = 17)
 {
     for (int i = 0; i < amount; i++)
     {
@@ -134,7 +122,6 @@ void icon_spawn_line(Level *level, const char *name, Vector pos, int amount, boo
     }
 }
 
-// icon.cpp
 void icon_spawn_json(Level *level, const char *json)
 {
     // Check heap

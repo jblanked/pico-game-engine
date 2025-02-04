@@ -12,15 +12,7 @@ char shadow_woods_v4[2210] = R"json(
         {"icon": "fence", "x": 250, "y": 150, "amount": 12, "horizontal": true},
         {"icon": "fence", "x": 550, "y": 350, "amount": 12, "horizontal": true},
         {"icon": "rock_large", "x": 400, "y": 70, "amount": 12, "horizontal": true},
-        {"icon": "rock_large", "x": 200, "y": 200, "amount": 6, "horizontal": false},
-        {"icon": "tree", "x": 5, "y": 5, "amount": 45, "horizontal": true},
-        {"icon": "tree", "x": 5, "y": 5, "amount": 20, "horizontal": false},
-        {"icon": "tree", "x": 22, "y": 22, "amount": 44, "horizontal": true},
-        {"icon": "tree", "x": 22, "y": 22, "amount": 20, "horizontal": false},
-        {"icon": "tree", "x": 5, "y": 347, "amount": 45, "horizontal": true},
-        {"icon": "tree", "x": 5, "y": 364, "amount": 45, "horizontal": true},
-        {"icon": "tree", "x": 735, "y": 37, "amount": 18, "horizontal": false},
-        {"icon": "tree", "x": 752, "y": 37, "amount": 18, "horizontal": false}
+        {"icon": "rock_large", "x": 200, "y": 200, "amount": 6, "horizontal": false}
     ],
     "enemy_data": [
         {"id": "cyclops", "index": 0, "start_position": {"x": 350, "y": 200}, "end_position": {"x": 390, "y": 200}, "move_timer": 2, "speed": 30, "attack_timer": 0.4, "strength": 10, "health": 100},
