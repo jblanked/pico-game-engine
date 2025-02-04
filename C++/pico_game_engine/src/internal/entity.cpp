@@ -54,8 +54,11 @@ namespace PicoGameEngine
         this->elapsed_attack_timer = 0;
         this->strength = 0;
         this->health = 0;
+        this->max_health = 0;
         this->level = 0;
         this->xp = 0;
+        this->health_regen = 0;
+        this->elapsed_health_regen = 0;
     }
 
     Entity::Entity(
@@ -117,8 +120,11 @@ namespace PicoGameEngine
         this->elapsed_attack_timer = 0;
         this->strength = 0;
         this->health = 0;
+        this->max_health = 0;
         this->level = 0;
         this->xp = 0;
+        this->health_regen = 0;
+        this->elapsed_health_regen = 0;
     }
 
     void Entity::collision(Entity *other, Game *game)
