@@ -10,8 +10,8 @@
 # CS -> GP9 (Pin 12)
 # RESET -> GP10 (Pin 14)
 # DC -> GP11 (Pin 15)
-# SDI/MOSI -> GP6 (Pin 9)
-# SCK -> GP7 (Pin 10)
+# SDI/MOSI -> GP7 (Pin 10)
+# SCK -> GP6 (Pin 9)
 # LED -> VSYS (Pin 39)
 
 

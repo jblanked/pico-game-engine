@@ -19,8 +19,8 @@ I have these settings for my Pico Game Engine setup in the User_Setup.h file:
 #define TFT_BL 32             // LED back-light control pin
 #define TFT_BACKLIGHT_ON HIGH // Level to turn ON back-light (HIGH or LOW)
 #define TFT_MISO 4
-#define TFT_MOSI 6
-#define TFT_SCLK 7
+#define TFT_MOSI 7
+#define TFT_SCLK 6
 #define TFT_CS 9   // Chip select control pin
 #define TFT_DC 11  // Data Command control pin
 #define TFT_RST 10 // Reset pin (could connect to RST pin)

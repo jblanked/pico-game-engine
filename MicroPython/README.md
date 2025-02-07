@@ -3,3 +3,5 @@
 2. Press and hold the `BOOT` button on your Raspberry Pi Pico for 2 seconds.
 3. While still holding the `BOOT` button, connect the Raspberry Pi Pico to your computer using a USB cable.
 4. Drag and drop the downloaded file onto the device. It will automatically reboot and begin running MicroPython.
+
+**Note**: Configure your buttons according to the example requirements. Standard configuration uses pins: 16 (UP), 17 (RIGHT), 18 (DOWN), and 19 (LEFT).
