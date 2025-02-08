@@ -44,6 +44,7 @@
     - Air Labyrinth: `AirLabyrinth-Pico-Engine.uf2`
     - T-Rex Runner: `T-Rex-Runner-Pico-Engine.uf2`
     - FlappyBird: `FlappyBird-Pico-Engine.uf2`
+    - Flight Assault: `FlightAssault-Pico-Engine.uf2`
 2. Enter bootloader mode:
     - Hold the `BOOT` button for 2 seconds
     - While holding, connect the Pico to your computer via USB
