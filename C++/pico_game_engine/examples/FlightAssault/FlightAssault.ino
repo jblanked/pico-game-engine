@@ -4,14 +4,14 @@
 // Translated from https://github.com/evillero/flight_assault/tree/main
 // All credits to @evillero
 /*
-
 Pico/Pico W:
 - Board Manager: Raspberry Pi Pico
 - Flash Size: 2MB (Sketch: 1984KB, FS: 64KB)
 - CPU Speed: 200MHz
+
 Pico 2/Pico 2 W:
 - Board Manager: Raspberry Pi Pico 2
-- Flash Size: 4MB (Sketch: 1984KB, FS: 64KB)
+- Flash Size: 4MB (Sketch: 4032KB, FS: 64KB)
 - CPU Speed: 200MHz
 */
 

@@ -5,9 +5,15 @@
 // Translated from https://github.com/jamisonderek/flipper-zero-tutorials/tree/main/vgm/apps/air_labyrinth
 // All credits to Derek Jamison
 /*
-    Board Manager: Raspberry Pi Pico (even if using the Pico W)
-    Flash Size: 2MB (Sketch: 1984KB, FS: 64KB)
-    CPU Speed: 200MHz
+Pico/Pico W:
+- Board Manager: Raspberry Pi Pico
+- Flash Size: 2MB (Sketch: 1984KB, FS: 64KB)
+- CPU Speed: 200MHz
+
+Pico 2/Pico 2 W:
+- Board Manager: Raspberry Pi Pico 2
+- Flash Size: 4MB (Sketch: 4032KB, FS: 64KB)
+- CPU Speed: 200MHz
 */
 void setup()
 {

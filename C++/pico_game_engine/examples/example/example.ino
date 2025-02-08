@@ -1,9 +1,15 @@
 #include <Arduino.h>
 #include <PicoGameEngine.h> // https://github.com/jblanked/pico-game-engine/tree/main/C%2B%2B
 /*
-    Board Manager: Raspberry Pi Pico (even if you are using the Pico W)
-    Flash Size: 2MB (Sketch: 1920KB, FS: 128KB)
-    CPU Speed: 133MHz (or overclocked to 200MHz)
+Pico/Pico W:
+- Board Manager: Raspberry Pi Pico
+- Flash Size: 2MB (Sketch: 1984KB, FS: 64KB)
+- CPU Speed: 200MHz
+
+Pico 2/Pico 2 W:
+- Board Manager: Raspberry Pi Pico 2
+- Flash Size: 4MB (Sketch: 4032KB, FS: 64KB)
+- CPU Speed: 200MHz
 */
 
 /* Update the player entity using current game input */
@@ -93,7 +99,7 @@ void setup()
     Level *level = new Level("Level 1", Vector(320, 240), game);
     game->level_add(level);
 
-    uint8_t player_left_naked_10x10px[200] = {
+    uint8_t player_left_10x10px[200] = {
         0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
         0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xFF, 0xFF,
         0xFF, 0xFF, 0xFF, 0xFF, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00,
@@ -120,7 +126,7 @@ void setup()
         ENTITY_PLAYER,
         Vector(160, 120), // Initial position
         Vector(10, 10),
-        player_left_naked_10x10px,
+        player_left_10x10px,
         NULL,          // No sprite left
         NULL,          // No sprite right
         NULL,          // No custom initialization routine
