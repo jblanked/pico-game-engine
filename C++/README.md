@@ -50,5 +50,3 @@
     - Hold the `BOOT` button for 2 seconds
     - While holding, connect the Pico to your computer via USB
 3. Drag and drop the `.uf2` file onto the mounted Pico drive. The device will automatically reboot and run the example.
-
-**Note**: Configure your buttons according to the example requirements. Standard configuration uses pins: 16 (UP), 17 (RIGHT), 18 (DOWN), and 19 (LEFT).
