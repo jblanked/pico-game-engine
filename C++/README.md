@@ -47,6 +47,7 @@
     - Flight Assault: `FlightAssault-Pico-Engine.uf2`
     - Pong: `Pong-Pico-Engine.uf2`
     - Arkanoid: `Arkanoid-Pico-Engine.uf2`
+    - Hawaii (Animation): `Hawaii-Pico-Engine.uf2`
 2. Enter bootloader mode:
     - Hold the `BOOT` button for 2 seconds
     - While holding, connect the Pico to your computer via USB
