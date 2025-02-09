@@ -2,8 +2,7 @@
 #include "PicoGameEngine.h" // https://github.com/jblanked/pico-game-engine/tree/main/C%2B%2B
 #include "frames.h"
 #include <stdint.h>
-// from  https://learn.adafruit.com/adafruit-2-2-pitft-hat-320-240-primary-display-for-raspberry-pi/playing-videos
-
+// from https://ia801300.us.archive.org/23/items/Architects_of_Tomorrow/2007-01-23-02-11-17_512kb.mp4
 /*
 Pico/Pico W:
 - Board Manager: Raspberry Pi Pico
