@@ -24,7 +24,7 @@ void canvas_draw_icon(Draw *canvas, int x, int y, const uint8_t *icon, int w, in
 #ifdef PicoEngine
     canvas->tft.drawBitmap(x, y, icon, w, h, color);
 #else
-    canvas->display.drawBitmap(x, y, icon, w, h, color);
+    canvas->display->drawBitmap(x, y, icon, w, h, color);
 #endif
 }
 
