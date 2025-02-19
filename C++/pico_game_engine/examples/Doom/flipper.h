@@ -27,6 +27,7 @@
 #define AlignRight 1
 #endif
 
+// https://doc-tft-espi.readthedocs.io/tft_espi/colors/
 #ifndef TFT_DARKCYAN
 #define TFT_DARKCYAN 0x03EF
 #endif
@@ -50,6 +51,18 @@
 #endif
 #ifndef TFT_VIOLET
 #define TFT_VIOLET 0x915C
+#endif
+#ifndef TFT_BROWN
+#define TFT_BROWN 0x9A60
+#endif
+#ifndef TFT_TRANSPARENT
+#define TFT_TRANSPARENT 0x0120
+#endif
+#ifndef TFT_YELLOW
+#define TFT_YELLOW 0xFFE0
+#endif
+#ifndef TFT_ORANGE
+#define TFT_ORANGE 0xFDA0
 #endif
 
 #ifndef FLIPPER_SCREEN_WIDTH
