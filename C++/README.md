@@ -40,6 +40,7 @@
 
 ### Running Pre-compiled Examples
 1. Download one of these example files:
+    - Doom: `Doom-Pico-Engine.uf2`
     - FlipWorld: `FlipWorld-Pico-Engine.uf2`
     - Air Labyrinth: `AirLabyrinth-Pico-Engine.uf2`
     - T-Rex Runner: `T-Rex-Runner-Pico-Engine.uf2`
